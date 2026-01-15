@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="360.0" style="-fx-background-image: url(&quot;https://insonnguyen.vn/wp-content/uploads/2025/04/image4-2.png&quot;);;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <AnchorPane layoutX="38.0" layoutY="150.0" opacity="0.45" prefHeight="342.0" prefWidth="284.0" style="-fx-background-color: green;" />
+    </children>
+</AnchorPane>
