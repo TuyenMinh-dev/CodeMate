@@ -29,7 +29,7 @@ public class MainApp {
             String hashedPassword = BCrypt.hashpw(rawPassword,BCrypt.gensalt());
 
             //thêm user mới
-            User user1 = new User("NguyenVanA",hashedPassword,"VanA@gmail.com");
+            User user1 = new User("Nguyễn Văn Anh","NguyenVanAnh",hashedPassword,"VanA@gmail.com");
             //cho user mới vào danh sách DB
             entityManager.persist(user1);
 
