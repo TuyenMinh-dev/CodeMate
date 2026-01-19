@@ -1,19 +1,34 @@
 package roots.app;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
+import org.mindrot.jbcrypt.BCrypt;
+import roots.entity.toDoList;
 import roots.models.User;
 import roots.utils.DBConnection;
-import org.mindrot.jbcrypt.BCrypt;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class MainApp {
     public static void main(String[] args) {
-        // 1. Khởi tạo EntityManagerFactory (theo tên trong persistence.xml)
-        // Đây là đối tượng nặng, chỉ nên tạo 1 lần, EntityManager là công cụ thao tác DB(thêm sử xóa , truy vấn)
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("CodeMatePU");
+
+        EntityManager em = emf.createEntityManager();
+
+        em.getTransaction().begin();
+
+        toDoList todo = new toDoList();
+        todo.setTitle("Hoc Hibernate");
+        todo.setCompleted(false);
+
+        em.persist(todo);
+
+        em.getTransaction().commit();
+
+        em.close();
+        emf.close();
+        System.out.println("Insert done");
+
+
         EntityManager entityManager = DBConnection.getEntityManager();
 
         //mọi thao tác thay đô d liệu DB phải nằm trong transaction
@@ -59,6 +74,9 @@ public class MainApp {
             }
             DBConnection.closeEntityManager();
         }
-
     }
+
+
+
 }
+
