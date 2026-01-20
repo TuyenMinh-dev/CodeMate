@@ -21,6 +21,8 @@ public class RegisterController {
         String username = usernameRGS.getText();
         String password = passwordRGS.getText();
         String checkPassword = checkPasswordRGS.getText();
+
+
     }
 }
 

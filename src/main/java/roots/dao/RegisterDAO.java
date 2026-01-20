@@ -1,33 +1,31 @@
 package roots.dao;
 
+import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import roots.constrant.Error;
 import roots.models.User;
-import roots.utils.HibernateUtils;
+import roots.utils.DBConnection;
 
 public class RegisterDAO {
-    private LoginDAO loginDAO = new LoginDAO();
-    public boolean registerNewUser(User user){
-        if(loginDAO.getUserByUsername(user.getUsername()) != null){
-            System.out.println(Error.username);
-            return false;
-        }
-        Transaction transaction = null;
-        boolean success = false;
-        try(Session session = HibernateUtils.getSessionFactory().openSession()){
-            transaction = session.beginTransaction();
-            session.save(user);
-            transaction.commit();
-            success = true;
-        } catch (Exception e) {
-            if(transaction != null){
-                transaction.rollback();
-                e.printStackTrace();
-                success = false;
+    public boolean registerNewUser(User  user){
+        EntityManager  em = DBConnection.getEntityManager();
+        boolean check = false;
+        try{
+            em.getTransaction().begin();
+            em.persist(user);
+            em.getTransaction().commit();
+            check = true;
+        }catch (Exception e){
+            if(em.getTransaction().isActive()){
+                em.getTransaction().rollback();
+                check = false;
             }
+            e.printStackTrace();
+        }finally {
+            em.close();
         }
-        return success;
+        return check;
     }
 
 }

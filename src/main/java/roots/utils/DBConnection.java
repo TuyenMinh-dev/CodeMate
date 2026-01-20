@@ -8,7 +8,7 @@ public class DBConnection {
     private static EntityManagerFactory entityManagerFactory;
     private static EntityManagerFactory buildEntityManagerFactory(){
         try{
-            return Persistence.createEntityManagerFactory("codemate"); //"my-persistence-unit" là tên đặt trong persistence.xml
+            return Persistence.createEntityManagerFactory("codemate");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -22,6 +22,7 @@ public class DBConnection {
         }
         return entityManagerFactory.createEntityManager();
     }
+
     public static void closeEntityManager(){
         if(entityManagerFactory != null || entityManagerFactory.isOpen()){
             entityManagerFactory.close();
