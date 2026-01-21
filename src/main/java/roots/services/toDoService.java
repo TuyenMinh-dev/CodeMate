@@ -14,8 +14,22 @@ public class toDoService {
         return todo;
     }
 
-    // lấy toàn bộ các
+    // lấy toàn bộ các todoo
     public List<toDoList> getAllTodos() {
         return toDoListDao.findAll();
     }
+    public boolean deleteTodo(toDoList todo){
+        if (todo == null) {
+            return false;
+        }
+        try {
+            toDoListDao.delete(todo);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Delete todo failed: " + e.getMessage());
+            return false;
+        }
+
+    }
+
 }

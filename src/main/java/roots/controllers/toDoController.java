@@ -1,5 +1,5 @@
 package roots.controllers;
-import roots.dao.toDoListDao;
+
 import roots.entity.toDoList;
 import roots.services.toDoService;
 import javafx.collections.FXCollections;
@@ -37,10 +37,12 @@ public class toDoController implements Initializable{
         if (selected == null) {
             return;
         }
-        // 1. xóa trong database
-        toDoListDao.delete(selected);
+        boolean success =todoService.deleteTodo(selected);
+        if(!success){
+            return;
+        }
 
-        // 2. xóa trong danh sách hiển thị
+        //  xóa trong danh sách hiển thị
         todoData.remove(selected);
     }
 
