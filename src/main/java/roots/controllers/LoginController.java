@@ -9,6 +9,7 @@ import roots.constrant.Message;
 import roots.constrant.Success;
 import roots.dao.LoginDAO;
 import roots.models.User;
+import roots.services.impl.AuthServiceImpl;
 
 public class LoginController {
     @FXML private TextField usernameLG;
@@ -21,9 +22,10 @@ public class LoginController {
     public void loginLG(){
          String name = usernameLG.getText();
          String pass = passwordLG.getText();
+        AuthServiceImpl authService = new AuthServiceImpl();
 
-
-
+        authService.login(name, pass);
     }
+
 
 }

@@ -4,12 +4,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import roots.services.impl.AuthServiceImpl;
 
 public class RegisterController {
     @FXML
     private TextField fullnameRGS;
     @FXML
     private TextField usernameRGS;
+    @FXML
+    private TextField emailRGS;
     @FXML
     private PasswordField passwordRGS;
     @FXML
@@ -19,10 +22,11 @@ public class RegisterController {
     public void continueRGS() {
         String fullname = fullnameRGS.getText();
         String username = usernameRGS.getText();
+        String email = emailRGS.getText();
         String password = passwordRGS.getText();
         String checkPassword = checkPasswordRGS.getText();
 
-
+        AuthServiceImpl authService = new AuthServiceImpl();
     }
 }
 
