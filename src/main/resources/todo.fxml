@@ -8,12 +8,20 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="roots.controllers.toDoController">
 
-    <TextField fx:id="txtTitle" promptText="Nhập công việc"/>
+    <HBox spacing="10">
+        <TextField fx:id="txtTitle" promptText="Nhập công việc"/>
+        <Button text="Add" onAction="#handleAdd"/>
+    </HBox>
 
-    <Button text="Add Todo" onAction="#handleAdd"/>
-    <Button text="Delete Todo" onAction="#handleDelete"/>
+    <HBox spacing="10">
+        <Button text="All" onAction="#filterAll"/>
+        <Button text="Done" onAction="#filterDone"/>
+        <Button text="Undone" onAction="#filterUndone"/>
+    </HBox>
 
 
-    <ListView fx:id="listTodo"/>
+    <ListView fx:id="listTodo" prefHeight="400"/>
+
+
 
 </VBox>

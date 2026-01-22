@@ -18,6 +18,7 @@ public class toDoService {
     public List<toDoList> getAllTodos() {
         return toDoListDao.findAll();
     }
+
     public boolean deleteTodo(toDoList todo){
         if (todo == null) {
             return false;
@@ -31,5 +32,23 @@ public class toDoService {
         }
 
     }
+    public toDoList toggleCompleted(toDoList todo) {
+        if (todo == null) {
+            return null;
+        }
+        todo.setCompleted(!todo.isCompleted());
+        toDoListDao.update(todo); // LƯU DB
+        return todo;
+    }
+    public void setCompleted(toDoList todo, boolean completed) {
+        todo.setCompleted(completed);
+        toDoListDao.update(todo);
+    }
+    public void delete(toDoList todo) {
+        toDoListDao.delete(todo);
+    }
+
+
+
 
 }
