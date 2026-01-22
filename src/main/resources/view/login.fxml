@@ -59,7 +59,6 @@
             <TextField fx:id="usernameLG" layoutX="64.0" layoutY="244.0" prefHeight="34.0" prefWidth="219.0" promptText="Wunyn_1234" />
             <PasswordField fx:id="passwordLG" layoutX="64.0" layoutY="328.0" prefHeight="34.0" prefWidth="219.0" promptText=". . . . . . . ." />
             <CheckBox fx:id="rememberLG" layoutX="64.0" layoutY="380.0" mnemonicParsing="false" text="Ghi nhớ" textFill="WHITE" />
-            <Text fx:id="forgetLG" fill="WHITE" layoutX="195.0" layoutY="393.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Quên mật khẩu?" />
             <Button fx:id="loginLG" layoutX="82.0" layoutY="416.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="184.0" style="-fx-background-color: #1E8E04; -fx-background-radius: 12; -fx-border-radius: 12;" text="Đăng nhập" textFill="WHITE">
                <font>
                   <Font size="15.0" />
@@ -67,6 +66,7 @@
             </Button>
             <Text fill="WHITE" layoutX="96.0" layoutY="496.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Chưa có tài khoản?" wrappingWidth="106.0" />
             <Text fx:id="registerLG" fill="RED" layoutX="202.0" layoutY="495.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Đăng kí" />
+            <Button fx:id="forgetLG" layoutX="174.0" layoutY="375.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="119.0" style="-fx-background-color: transparent;" text="Quên mật khẩu?" textFill="WHITE" />
          </children>
       </AnchorPane>
    </children>

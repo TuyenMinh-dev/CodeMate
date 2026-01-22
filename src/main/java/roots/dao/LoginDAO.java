@@ -24,17 +24,23 @@ public class LoginDAO {
             em.close();
         }
     }
-    public User getUserByUsername(String username){
+    public User getUserByValue(String value, String nameField, String errorMessage){
         EntityManager em = DBConnection.getEntityManager();
         try{
-            User user = em.createQuery("select u from User u where u.username = :name", User.class)
-                    .setParameter("name", username).getSingleResult();
+            User user = em.createQuery("select u from User u where u." + nameField + " = :value", User.class)
+                    .setParameter("value", value).getSingleResult();
             return user;
         } catch (NoResultException e) {
-            System.out.println(Error.username);
+            System.out.println(errorMessage);
             return  null;
         }finally {
             em.close();
         }
+    }
+    public User getUserByEmail(String email){
+        return getUserByValue("email", email, Error.email);
+    }
+    public User getUserByUsername(String username){
+        return getUserByValue("name", username, Error.username);
     }
 }

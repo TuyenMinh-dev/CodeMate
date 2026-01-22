@@ -10,6 +10,8 @@ import roots.constrant.Success;
 import roots.dao.LoginDAO;
 import roots.models.User;
 import roots.services.impl.AuthServiceImpl;
+import roots.utils.AlertUtils;
+
 
 public class LoginController {
     @FXML private TextField usernameLG;
@@ -24,7 +26,17 @@ public class LoginController {
          String pass = passwordLG.getText();
         AuthServiceImpl authService = new AuthServiceImpl();
 
-        authService.login(name, pass);
+        User user = authService.login(name, pass);
+        if(user != null){
+            AlertUtils.showSuccessAlert(Message.wellcome + name, Message.comback);
+        }
+        else {
+            System.out.println(Error.failLogin);;
+        }
+    }
+    @FXML
+    public void forgetLG(){
+
     }
 
 

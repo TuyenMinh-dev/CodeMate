@@ -17,9 +17,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public User login(String username, String password) {
         User user = loginDAO.checkAccountUser(username,password);
-
         return user;
     }
+
+    @Override
+    public User forgetPassword(String email, String newPassword) {
+        User checkUser = loginDAO.getUserByEmail(email);
+
+        return checkUser;
+    }
+
 
     @Override
     public boolean register(String fullname, String username, String email, String password, String checkPasword) {

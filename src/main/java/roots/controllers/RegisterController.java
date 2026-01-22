@@ -27,6 +27,9 @@ public class RegisterController {
         String checkPassword = checkPasswordRGS.getText();
 
         AuthServiceImpl authService = new AuthServiceImpl();
+        authService.register(fullname,username,email,password,checkPassword);
+
+
     }
 }
 
