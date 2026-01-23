@@ -16,6 +16,7 @@ import roots.utils.AlertUtils;
 public class LoginController {
     @FXML private TextField usernameLG;
     @FXML private PasswordField passwordLG;
+    @FXML private TextField emailFG;
 
 
     private LoginDAO loginDAO = new LoginDAO();
@@ -36,6 +37,8 @@ public class LoginController {
     }
     @FXML
     public void forgetLG(){
+        String email = emailFG.getText();
+        AuthServiceImpl authService = new AuthServiceImpl();
 
     }
 
