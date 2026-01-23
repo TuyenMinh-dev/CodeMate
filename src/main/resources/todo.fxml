@@ -9,7 +9,7 @@
       fx:controller="roots.controllers.toDoController">
 
     <HBox spacing="10">
-        <TextField fx:id="txtTitle" promptText="Nhập công việc"/>
+        <TextField fx:id="txtTitle" promptText="Fill tasks"/>
         <Button text="Add" onAction="#handleAdd"/>
     </HBox>
 

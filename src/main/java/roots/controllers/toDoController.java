@@ -13,9 +13,10 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class toDoController implements Initializable{
-    private ObservableList<toDoList> todoData = FXCollections.observableArrayList();
+
     private toDoService todoService = new toDoService();
     private ObservableList<toDoList> allTodos = FXCollections.observableArrayList();
+    private String currentFilter = "ALL";
 
 
     @FXML
@@ -27,40 +28,44 @@ public class toDoController implements Initializable{
     @FXML
     private void handleAdd() {
         toDoList todo = todoService.addTodo(txtTitle.getText());
-        if(todo == null){
-            return;
-        }
-        todoData.add(todo);   //add vào danh sách hiển thị
+        if (todo == null) return;
+
+        allTodos.add(todo);   //  add vào master list
         txtTitle.clear();
     }
+
     @FXML
     private void filterAll() {
-        listTodo.setItems(FXCollections.observableArrayList(allTodos));
+        currentFilter = "ALL";
+        listTodo.setItems(allTodos);
     }
 
     @FXML
     private void filterDone() {
-        listTodo.setItems(
-                allTodos.filtered(toDoList::isCompleted)
-        );
+        currentFilter = "DONE";
+        listTodo.setItems(allTodos.filtered(toDoList::isCompleted));
     }
+
 
     @FXML
     private void filterUndone() {
-        listTodo.setItems(
-                allTodos.filtered(todo -> !todo.isCompleted())
-        );
+        currentFilter = "UNDONE";
+        listTodo.setItems(allTodos.filtered(todo -> !todo.isCompleted()));
     }
-
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         allTodos.addAll(todoService.getAllTodos());
 
-        listTodo.setItems(FXCollections.observableArrayList(allTodos));
-        listTodo.setCellFactory(list -> new toDoCell(todoService, listTodo.getItems()));
+        listTodo.setItems(allTodos); //  gắn trực tiếp
+        listTodo.setCellFactory(list ->
+                new toDoCell(todoService, () -> currentFilter)
+        );
+
+
     }
+
 
 
 }
