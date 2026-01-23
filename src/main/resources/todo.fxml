@@ -3,25 +3,46 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="10" alignment="CENTER"
-      xmlns="http://javafx.com/javafx/21"
+<VBox spacing="12"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="roots.controllers.toDoController">
+      fx:controller="roots.controllers.toDoController"
+      style="-fx-padding: 16;">
 
+    <!-- ADD TASK -->
     <HBox spacing="10">
-        <TextField fx:id="txtTitle" promptText="Fill tasks"/>
-        <Button text="Add" onAction="#handleAdd"/>
+        <TextField fx:id="txtTitle"
+                   promptText="Add new task..."
+                   HBox.hgrow="ALWAYS"/>
+        <Button text="+ Add"
+                onAction="#handleAdd"
+                style="
+                    -fx-background-color: #4CAF50;
+                    -fx-text-fill: white;
+                    -fx-font-weight: bold;
+                "/>
     </HBox>
 
+    <!-- FILTER -->
     <HBox spacing="10">
         <Button text="All" onAction="#filterAll"/>
         <Button text="Done" onAction="#filterDone"/>
         <Button text="Undone" onAction="#filterUndone"/>
     </HBox>
 
+    <!-- TITLE -->
+    <Label fx:id="lblListTitle"
+           text="LIST TASKS"
+           style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
-    <ListView fx:id="listTodo" prefHeight="400"/>
-
-
+    <!-- LIST CONTAINER -->
+    <VBox style="
+        -fx-background-color: #f9f9f9;
+        -fx-background-radius: 10;
+        -fx-padding: 10;
+        -fx-border-color: #ddd;
+        -fx-border-radius: 10;
+    ">
+        <ListView fx:id="listTodo"/>
+    </VBox>
 
 </VBox>
