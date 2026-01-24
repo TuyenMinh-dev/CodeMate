@@ -1,18 +1,17 @@
 package roots.utils;
 
-import jakarta.mail.Authenticator;
-import jakarta.mail.PasswordAuthentication;
-import jakarta.mail.Session;
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
+import java.util.Date;
 import java.util.Properties;
 
 public class EmailUtils {
-    public static void main(String[] args) {
-        final String emailFrom = "sakuraminekochan@gmail.com";
-        final String password = "yhxtlucitucjlwse";
+    private static final String emailFrom = "sakuraminekochan@gmail.com";
+    private static final String password = "yhxtlucitucjlwse";
 
-        final String emailTo = "myuyen120806@gmail.com";
+    public static void sendEmail(String emailTo,String subject, String OTP) {
 
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
@@ -29,9 +28,20 @@ public class EmailUtils {
 
         Session session = Session.getInstance(props, authenticator);
 
+        try{
+            MimeMessage message = new MimeMessage(session);
 
+            message.setFrom(emailFrom);
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailTo, false));
+            message.setSubject(subject, "UTF-8");
+            message.setSentDate(new Date());
+            message.setText(OTP, "UTF-8");
 
+            Transport.send(message);
 
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
 
 
     }
