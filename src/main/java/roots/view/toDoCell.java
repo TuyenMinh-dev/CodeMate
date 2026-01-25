@@ -24,10 +24,16 @@ public class toDoCell extends ListCell<toDoList> {
 
     private final toDoService todoService;
     private final Supplier<String> currentFilter;
+    private final Runnable onDataChanged; // 🔥 CALLBACK
 
-    public toDoCell(toDoService todoService, Supplier<String> currentFilter) {
+    public toDoCell(
+            toDoService todoService,
+            Supplier<String> currentFilter,
+            Runnable onDataChanged
+    ) {
         this.todoService = todoService;
         this.currentFilter = currentFilter;
+        this.onDataChanged = onDataChanged;
 
         initLayout();
         initEvents();
@@ -70,6 +76,7 @@ public class toDoCell extends ListCell<toDoList> {
             toDoList item = getItem();
             if (item != null) {
                 todoService.setCompleted(item, checkBox.isSelected());
+                onDataChanged.run(); // 🔥 UPDATE %
             }
         });
 
@@ -80,11 +87,12 @@ public class toDoCell extends ListCell<toDoList> {
             if (item != null) {
                 todoService.delete(item);
                 getListView().getItems().remove(item);
+                onDataChanged.run(); // 🔥 UPDATE %
             }
         });
 
-        txtEdit.focusedProperty().addListener((obs, oldV, newV) -> {
-            if (!newV) saveEdit();
+        txtEdit.focusedProperty().addListener((obs, o, n) -> {
+            if (!n) saveEdit();
         });
 
         txtEdit.setOnAction(e -> saveEdit());
@@ -110,7 +118,6 @@ public class toDoCell extends ListCell<toDoList> {
         txtEdit.selectAll();
     }
 
-
     private void saveEdit() {
         toDoList item = getItem();
         if (item == null) return;
@@ -135,8 +142,9 @@ public class toDoCell extends ListCell<toDoList> {
 
         checkBox.setVisible(isAll);
         checkBox.setManaged(isAll);
-    }
 
+        onDataChanged.run(); // 🔥 UPDATE %
+    }
 
     /* ================= UPDATE ================= */
 
@@ -173,7 +181,7 @@ public class toDoCell extends ListCell<toDoList> {
         setGraphic(container);
     }
 
-    /* ================= ICON HELPERS ================= */
+    /* ================= ICONS ================= */
 
     private Button createIconButton(SVGPath icon) {
         icon.setScaleX(0.7);
@@ -207,7 +215,12 @@ public class toDoCell extends ListCell<toDoList> {
 
     private SVGPath moreIcon() {
         SVGPath p = new SVGPath();
-        p.setContent("M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z");
+        p.setContent(
+                "M12 8a2 2 0 1 0 0-4 " +
+                        "2 2 0 0 0 0 4zm0 6a2 2 0 1 0 0-4 " +
+                        "2 2 0 0 0 0 4zm0 6a2 2 0 1 0 0-4 " +
+                        "2 2 0 0 0 0 4z"
+        );
         return p;
     }
 }

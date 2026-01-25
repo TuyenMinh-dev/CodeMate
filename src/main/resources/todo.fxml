@@ -45,4 +45,11 @@
         <ListView fx:id="listTodo"/>
     </VBox>
 
+    <VBox spacing="6">
+        <Label text="Hôm nay" style="-fx-font-weight: bold"/>
+        <ProgressBar fx:id="progressBar" prefWidth="300"/>
+        <Label fx:id="lblProgress" text="0%"/>
+    </VBox>
+
+
 </VBox>
