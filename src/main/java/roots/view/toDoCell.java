@@ -1,24 +1,26 @@
 package roots.view;
 
-import roots.entity.toDoList;
-import roots.services.toDoService;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
+import javafx.scene.shape.SVGPath;
+import roots.entity.toDoList;
+import roots.services.toDoService;
 
 import java.util.function.Supplier;
-
-import javafx.animation.FadeTransition;
-import javafx.animation.ScaleTransition;
-import javafx.util.Duration;
 
 public class toDoCell extends ListCell<toDoList> {
 
     private final CheckBox checkBox = new CheckBox();
     private final Label lblTitle = new Label();
-    private final Button btnDelete = new Button("🗑");
-    private final HBox container = new HBox(10);
+    private final TextField txtEdit = new TextField();
+
+    private final Button btnEdit = createIconButton(editIcon());
+    private final Button btnDelete = createIconButton(deleteIcon());
+    private final Button btnMore = createIconButton(moreIcon());
+
+    private final HBox actionBox = new HBox(2);
+    private final HBox container = new HBox(8);
 
     private final toDoService todoService;
     private final Supplier<String> currentFilter;
@@ -31,52 +33,112 @@ public class toDoCell extends ListCell<toDoList> {
         initEvents();
     }
 
+    /* ================= LAYOUT ================= */
+
     private void initLayout() {
-        container.getChildren().addAll(checkBox, lblTitle, btnDelete);
-        container.setAlignment(Pos.CENTER_LEFT);
-        HBox.setHgrow(lblTitle, Priority.ALWAYS);
-
-        container.setStyle(NORMAL_STYLE);
-        container.setOnMouseEntered(e -> {
-            if (!container.isDisabled())
-                container.setStyle(HOVER_STYLE);
-        });
-
-        container.setOnMouseExited(e -> {
-            if (!container.isDisabled())
-                container.setStyle(NORMAL_STYLE);
-        });
-
         lblTitle.setStyle("-fx-font-size: 14px;");
+        txtEdit.setVisible(false);
+        txtEdit.setManaged(false);
 
-        btnDelete.setPrefSize(36, 36);
-        btnDelete.setStyle("""
-                    -fx-background-color: transparent;
-                    -fx-font-size: 16px;
-                    -fx-text-fill: #666;
-                    -fx-cursor: hand;
-                """);
+        actionBox.getChildren().addAll(btnEdit, btnDelete, btnMore);
+        actionBox.setAlignment(Pos.CENTER_RIGHT);
 
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        container.getChildren().addAll(
+                checkBox,
+                lblTitle,
+                txtEdit,
+                spacer,
+                actionBox
+        );
+
+        container.setAlignment(Pos.CENTER_LEFT);
+        container.setStyle("""
+            -fx-padding: 6 10;
+            -fx-background-color: #f9f9f9;
+            -fx-background-radius: 10;
+        """);
     }
+
+    /* ================= EVENTS ================= */
 
     private void initEvents() {
-        checkBox.setOnAction(e -> {
-            toDoList current = getItem();
-            if (current == null) return;
 
-            todoService.setCompleted(current, checkBox.isSelected());
-            playToggleAnimation();
+        checkBox.setOnAction(e -> {
+            toDoList item = getItem();
+            if (item != null) {
+                todoService.setCompleted(item, checkBox.isSelected());
+            }
         });
 
+        btnEdit.setOnAction(e -> startTitleEdit());
 
         btnDelete.setOnAction(e -> {
-            toDoList current = getItem();
-            if (current == null) return;
-
-            todoService.delete(current);
-            getListView().getItems().remove(current);
+            toDoList item = getItem();
+            if (item != null) {
+                todoService.delete(item);
+                getListView().getItems().remove(item);
+            }
         });
+
+        txtEdit.focusedProperty().addListener((obs, oldV, newV) -> {
+            if (!newV) saveEdit();
+        });
+
+        txtEdit.setOnAction(e -> saveEdit());
     }
+
+    /* ================= EDIT ================= */
+
+    private void startTitleEdit() {
+        txtEdit.setText(lblTitle.getText());
+
+        lblTitle.setVisible(false);
+        lblTitle.setManaged(false);
+
+        actionBox.setVisible(false);
+        actionBox.setManaged(false);
+
+        checkBox.setVisible(false);
+        checkBox.setManaged(false);
+
+        txtEdit.setVisible(true);
+        txtEdit.setManaged(true);
+        txtEdit.requestFocus();
+        txtEdit.selectAll();
+    }
+
+
+    private void saveEdit() {
+        toDoList item = getItem();
+        if (item == null) return;
+
+        String newTitle = txtEdit.getText().trim();
+        if (!newTitle.isEmpty()) {
+            item.setTitle(newTitle);
+            todoService.update(item);
+            lblTitle.setText(newTitle);
+        }
+
+        txtEdit.setVisible(false);
+        txtEdit.setManaged(false);
+
+        lblTitle.setVisible(true);
+        lblTitle.setManaged(true);
+
+        boolean isAll = "ALL".equals(currentFilter.get());
+
+        actionBox.setVisible(isAll);
+        actionBox.setManaged(isAll);
+
+        checkBox.setVisible(isAll);
+        checkBox.setManaged(isAll);
+    }
+
+
+    /* ================= UPDATE ================= */
 
     @Override
     protected void updateItem(toDoList item, boolean empty) {
@@ -87,60 +149,65 @@ public class toDoCell extends ListCell<toDoList> {
             return;
         }
 
+        txtEdit.setVisible(false);
+        txtEdit.setManaged(false);
+        lblTitle.setVisible(true);
+        lblTitle.setManaged(true);
+
         lblTitle.setText(item.getTitle());
         checkBox.setSelected(item.isCompleted());
 
-        // ===== style completed =====
         boolean isAll = "ALL".equals(currentFilter.get());
-
-        if (item.isCompleted() && isAll) {
-            // chỉ mờ + gạch khi đang ở ALL
-            lblTitle.setStyle("-fx-text-fill: #9e9e9e; -fx-strikethrough: true;");
-            container.setOpacity(0.6);
-        } else {
-            // DONE hoặc UNDONE → hiển thị bình thường
-            lblTitle.setStyle("-fx-text-fill: black; -fx-strikethrough: false;");
-            container.setOpacity(1.0);
-        }
-
-
-        // ===== FILTER LOGIC (QUAN TRỌNG) =====
 
         checkBox.setVisible(isAll);
         checkBox.setManaged(isAll);
+        actionBox.setVisible(isAll);
+        actionBox.setManaged(isAll);
 
-        btnDelete.setVisible(isAll);
-        btnDelete.setManaged(isAll);
+        if (item.isCompleted() && isAll) {
+            lblTitle.setStyle("-fx-text-fill: #9e9e9e; -fx-strikethrough: true;");
+        } else {
+            lblTitle.setStyle("-fx-text-fill: black; -fx-strikethrough: false;");
+        }
 
         setGraphic(container);
     }
 
-    private void playToggleAnimation() {
-        FadeTransition fade = new FadeTransition(Duration.millis(150), container);
-        fade.setFromValue(0.7);
-        fade.setToValue(1.0);
+    /* ================= ICON HELPERS ================= */
 
-        ScaleTransition scale = new ScaleTransition(Duration.millis(150), container);
-        scale.setFromX(0.97);
-        scale.setFromY(0.97);
-        scale.setToX(1.0);
-        scale.setToY(1.0);
+    private Button createIconButton(SVGPath icon) {
+        icon.setScaleX(0.7);
+        icon.setScaleY(0.7);
+        icon.setStyle("-fx-fill: #666;");
 
-        fade.play();
-        scale.play();
+        Button btn = new Button();
+        btn.setGraphic(icon);
+        btn.setPrefSize(20, 20);
+        btn.setMinSize(20, 20);
+        btn.setMaxSize(20, 20);
+        btn.setStyle("""
+            -fx-background-color: transparent;
+            -fx-background-radius: 6;
+            -fx-cursor: hand;
+        """);
+        return btn;
     }
 
-    private static final String NORMAL_STYLE = """
-                -fx-padding: 8 10;
-                -fx-background-color: #f9f9f9;
-                -fx-background-radius: 8;
-            """;
+    private SVGPath editIcon() {
+        SVGPath p = new SVGPath();
+        p.setContent("M3 17.25V21h3.75L17.81 9.94l-3.75-3.75z");
+        return p;
+    }
 
-    private static final String HOVER_STYLE = """
-                -fx-padding: 8 10;
-                -fx-background-color: #eef4ff;
-                -fx-background-radius: 8;
-            """;
+    private SVGPath deleteIcon() {
+        SVGPath p = new SVGPath();
+        p.setContent("M6 7h12v2H6z M8 9h8v10H8z M9 4h6l1 1h3v2H5V5h3z");
+        return p;
+    }
 
-
+    private SVGPath moreIcon() {
+        SVGPath p = new SVGPath();
+        p.setContent("M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z");
+        return p;
+    }
 }
