@@ -1,6 +1,9 @@
 package roots.controllers;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -11,6 +14,8 @@ import roots.dao.LoginDAO;
 import roots.models.User;
 import roots.services.impl.AuthServiceImpl;
 import roots.utils.AlertUtils;
+
+import java.io.IOException;
 
 
 public class LoginController {
@@ -37,10 +42,9 @@ public class LoginController {
     }
     @FXML
     public void forgetLG(){
-        String email = emailFG.getText();
-        AuthServiceImpl authService = new AuthServiceImpl();
 
     }
+
 
 
 }
