@@ -1,6 +1,7 @@
 package roots.utils;
 
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -10,7 +11,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class ChangeFXML {
-    public static void changeFXML(ActionEvent event, String pathFXML){
+    public static void changeFXML(Event event, String pathFXML){
         try{
             FXMLLoader fxmlLoader = new FXMLLoader(Scene.class.getResource(pathFXML));
             Parent root = fxmlLoader.load();

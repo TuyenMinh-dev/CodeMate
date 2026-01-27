@@ -3,6 +3,7 @@ package roots.controllers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import roots.services.EmailService;
 import roots.utils.ChangeFXML;
 import roots.utils.EmailUtils;
@@ -32,6 +33,14 @@ public class ForgetPasswordController {
             }
 
         }
+    }
+    @FXML
+    public void comeBackFG1(MouseEvent event){
+        ChangeFXML.changeFXML(event, "/view/login.fxml");
+    }
+    @FXML
+    public void comeBackFG2(MouseEvent event){
+        ChangeFXML.changeFXML(event, "/view/forgetPassword.fxml");
     }
 
 }

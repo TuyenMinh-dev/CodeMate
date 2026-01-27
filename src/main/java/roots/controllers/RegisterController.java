@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import roots.services.impl.AuthServiceImpl;
 import roots.utils.ChangeFXML;
 
@@ -21,7 +22,7 @@ public class RegisterController {
     private PasswordField checkPasswordRGS;
 
     @FXML
-    public void continueRGS() {
+    public void continueRGS(ActionEvent event) {
         String fullname = fullnameRGS.getText();
         String username = usernameRGS.getText();
         String email = emailRGS.getText();
@@ -37,5 +38,6 @@ public class RegisterController {
     public void loginRGS(ActionEvent event){
         ChangeFXML.changeFXML(event, "/view/login.fxml");
     }
+
 }
 
