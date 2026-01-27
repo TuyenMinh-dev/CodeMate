@@ -1,5 +1,6 @@
 package roots.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +15,7 @@ import roots.dao.LoginDAO;
 import roots.models.User;
 import roots.services.impl.AuthServiceImpl;
 import roots.utils.AlertUtils;
+import roots.utils.ChangeFXML;
 
 import java.io.IOException;
 
@@ -27,7 +29,7 @@ public class LoginController {
     private LoginDAO loginDAO = new LoginDAO();
 
     @FXML
-    public void loginLG(){
+    public void loginLG(ActionEvent event){
          String name = usernameLG.getText();
          String pass = passwordLG.getText();
         AuthServiceImpl authService = new AuthServiceImpl();
@@ -35,14 +37,19 @@ public class LoginController {
         User user = authService.login(name, pass);
         if(user != null){
             AlertUtils.showSuccessAlert(Message.wellcome + name, Message.comback);
+            ChangeFXML.changeFXML(event, "/view/register.fxml");
         }
         else {
             System.out.println(Error.failLogin);;
         }
     }
     @FXML
-    public void forgetLG(){
-
+    public void forgetLG(ActionEvent event){
+        ChangeFXML.changeFXML(event, "/view/forgetPassword.fxml");
+    }
+    @FXML
+    public void registerLG(ActionEvent event){
+        ChangeFXML.changeFXML(event, "/view/register.fxml");
     }
 
 

@@ -19,18 +19,13 @@
       </ImageView>
       <AnchorPane layoutY="-14.0" prefHeight="640.0" prefWidth="360.0">
          <children>
-            <AnchorPane layoutX="37.0" layoutY="43.0" prefHeight="555.0" prefWidth="286.0" style="-fx-background-color: rgba(10,-60,10,0.6); -fx-border-radius: 15; -fx-background-radius: 15;">
+            <AnchorPane layoutX="37.0" layoutY="56.0" prefHeight="555.0" prefWidth="286.0" style="-fx-background-color: rgba(10,0,10,0.1); -fx-border-radius: 15; -fx-background-radius: 15;">
                <children>
                   <Button fx:id="continueRGS" layoutX="62.0" layoutY="487.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="163.0" style="-fx-background-color: #1E8E04; -fx-background-radius: 12; -fx-border-radius: 12;" text="Tiếp tục" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font>
                   </Button>
-                  <Label fx:id="loginRGS" layoutX="157.0" layoutY="462.0" text="Đăng nhập ngay" textFill="#c1ff08">
-                     <font>
-                        <Font name="System Bold Italic" size="12.0" />
-                     </font>
-                  </Label>
                   <Text fill="WHITE" layoutX="57.0" layoutY="475.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Đã có tài khoản?">
                      <font>
                         <Font name="System Bold" size="12.0" />
@@ -66,11 +61,16 @@
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <Label layoutX="51.0" layoutY="14.0" prefHeight="53.0" prefWidth="185.0" text="  Tạo tài khoản" textAlignment="JUSTIFY" textFill="#00ffe6" textOverrun="CLIP">
+                  <Label layoutX="51.0" layoutY="14.0" prefHeight="53.0" prefWidth="185.0" text="  Tạo tài khoản" textAlignment="JUSTIFY" textFill="WHITE" textOverrun="CLIP">
                      <font>
                         <Font name="System Bold" size="26.0" />
                      </font>
                   </Label>
+                  <Button fx:id="loginRGS" layoutX="150.0" layoutY="458.0" mnemonicParsing="false" onAction="#loginRGS" style="-fx-background-color: transperant;" text="Đăng nhập ngay" textFill="#a6ff00">
+                     <font>
+                        <Font name="System Bold Italic" size="12.0" />
+                     </font>
+                  </Button>
                </children>
             </AnchorPane>
          </children>

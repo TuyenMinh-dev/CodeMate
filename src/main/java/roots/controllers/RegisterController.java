@@ -1,10 +1,12 @@
 package roots.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import roots.services.impl.AuthServiceImpl;
+import roots.utils.ChangeFXML;
 
 public class RegisterController {
     @FXML
@@ -30,6 +32,10 @@ public class RegisterController {
         authService.register(fullname,username,email,password,checkPassword);
 
 
+    }
+    @FXML
+    public void loginRGS(ActionEvent event){
+        ChangeFXML.changeFXML(event, "/view/login.fxml");
     }
 }
 
