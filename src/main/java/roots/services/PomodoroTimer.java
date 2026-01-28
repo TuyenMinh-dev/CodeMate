@@ -1,87 +1,80 @@
 package roots.services;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
+import roots.entity.PomodoroState;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 public class PomodoroTimer {
 
+    private Timer timer;
+    private int secondsLeft;
+    private PomodoroState state = PomodoroState.IDLE;
 
-        private Timeline timeline;
-        private int remainingSeconds;
+    private Consumer<Integer> onTick;
+    private Consumer<PomodoroState> onStateChange;
+    private Runnable onFinish;
 
-        // callback mỗi giây
-        private Consumer<Integer> onTick;
+    /* ===== CALLBACK SETTERS ===== */
 
-        // callback khi hết giờ
-        private Runnable onFinish;
-
-    /* =========================
-       PUBLIC API
-       ========================= */
-
-        // bắt đầu đếm với số phút
-        public void start(int minutes) {
-            stop(); // đảm bảo không có timer cũ
-
-            remainingSeconds = minutes * 60;
-
-            timeline = new Timeline(
-                    new KeyFrame(Duration.seconds(1), e -> tick())
-            );
-            timeline.setCycleCount(Timeline.INDEFINITE);
-            timeline.play();
-        }
-
-        // dừng timer
-        public void stop() {
-            if (timeline != null) {
-                timeline.stop();
-                timeline = null;
-            }
-        }
-
-        // đăng ký callback tick
-        public void setOnTick(Consumer<Integer> onTick) {
-            this.onTick = onTick;
-        }
-
-        // đăng ký callback finish
-        public void setOnFinish(Runnable onFinish) {
-            this.onFinish = onFinish;
-        }
-
-    /* =========================
-       INTERNAL LOGIC
-       ========================= */
-
-        private void tick() {
-            remainingSeconds--;
-
-            if (onTick != null) {
-                onTick.accept(remainingSeconds);
-            }
-
-            if (remainingSeconds <= 0) {
-                stop();
-                if (onFinish != null) {
-                    onFinish.run();
-                }
-            }
-        }
-    public void startSeconds(int seconds) {
-        stop();
-        remainingSeconds = seconds;
-
-        timeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), e -> tick())
-        );
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+    public void onTick(Consumer<Integer> callback) {
+        this.onTick = callback;
     }
 
+    public void onStateChange(Consumer<PomodoroState> callback) {
+        this.onStateChange = callback;
+    }
+
+    public void onFinish(Runnable callback) {
+        this.onFinish = callback;
+    }
+
+    /* ===== CORE ===== */
+
+    public void startWork(int seconds) {
+        start(seconds, PomodoroState.WORK);
+    }
+
+    public void startRest(int seconds) {
+        start(seconds, PomodoroState.REST);
+    }
+
+    private void start(int seconds, PomodoroState newState) {
+        stop();
+
+        this.secondsLeft = seconds;
+        this.state = newState;
+
+        if (onStateChange != null) {
+            onStateChange.accept(state);
+        }
+
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                secondsLeft--;
+
+                if (onTick != null) {
+                    onTick.accept(secondsLeft);
+                }
+
+                if (secondsLeft <= 0) {
+                    stop();
+                    if (onFinish != null) {
+                        onFinish.run();
+                    }
+                }
+            }
+        }, 1000, 1000);
+    }
+
+    public void stop() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+        state = PomodoroState.IDLE;
+    }
 }
-
-
