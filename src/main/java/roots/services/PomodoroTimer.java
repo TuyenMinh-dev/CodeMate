@@ -16,7 +16,7 @@ public class PomodoroTimer {
     private Consumer<PomodoroState> onStateChange;
     private Runnable onFinish;
 
-    /* ===== CALLBACK SETTERS ===== */
+    //callback setter
 
     public void onTick(Consumer<Integer> callback) {
         this.onTick = callback;
@@ -30,7 +30,7 @@ public class PomodoroTimer {
         this.onFinish = callback;
     }
 
-    /* ===== CORE ===== */
+    //core timer
 
     public void startWork(int seconds) {
         start(seconds, PomodoroState.WORK);
