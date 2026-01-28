@@ -7,6 +7,7 @@ import roots.dao.LoginDAO;
 import roots.dao.RegisterDAO;
 import roots.models.User;
 import roots.services.AuthService;
+import roots.utils.AlertUtils;
 
 
 public class AuthServiceImpl implements AuthService {
@@ -34,10 +35,12 @@ public class AuthServiceImpl implements AuthService {
 
         if(checkUser != null){
             System.out.println(Error.username);
+            AlertUtils.showFailAlert(Error.fail, Error.username);
             return false;
         }
         if(!checkPasword.equals(password)){
             System.out.println(Error.checkPassword);
+            AlertUtils.showFailAlert(Error.fail, Error.checkPassword);
             return false;
         }
 

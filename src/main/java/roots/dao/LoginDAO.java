@@ -21,7 +21,9 @@ public class LoginDAO {
             e.printStackTrace();
             return null;
         }finally {
-            em.close();
+            if(em.isOpen() && em != null){
+                em.close();
+            }
         }
     }
     public User getUserByValue(String value, String nameField, String errorMessage){
@@ -34,13 +36,15 @@ public class LoginDAO {
             System.out.println(errorMessage);
             return  null;
         }finally {
-            em.close();
+            if(em.isOpen() && em != null){
+                em.close();
+            }
         }
     }
     public User getUserByEmail(String email){
-        return getUserByValue("email", email, Error.email);
+        return getUserByValue( email,"email", Error.email);
     }
     public User getUserByUsername(String username){
-        return getUserByValue("name", username, Error.username);
+        return getUserByValue( username,"username", Error.username);
     }
 }

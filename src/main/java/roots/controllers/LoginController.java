@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import roots.constrant.Error;
@@ -25,23 +26,44 @@ public class LoginController {
     @FXML private PasswordField passwordLG;
     @FXML private TextField emailFG;
 
+    @FXML private Label errorUsername;
+    @FXML private Label errorPassword;
 
     private LoginDAO loginDAO = new LoginDAO();
 
     @FXML
     public void loginLG(ActionEvent event){
+        resetErrorEmpty();
          String name = usernameLG.getText();
          String pass = passwordLG.getText();
-        AuthServiceImpl authService = new AuthServiceImpl();
 
-        User user = authService.login(name, pass);
-        if(user != null){
-            AlertUtils.showSuccessAlert(Message.wellcome + name, Message.comback);
-            ChangeFXML.changeFXML(event, "/view/register.fxml");
+         boolean checkLG = false;
+         if(name.isEmpty()){
+             errorUsername.setText("Tên đăng nhập không được trống!");
+             checkLG = true;
+         }
+        if(pass.isEmpty()){
+            errorPassword.setText("Mật khẩu không được để trống!");
+            checkLG = true;
+        }
+        if(checkLG){
+            return;
         }
         else {
-            System.out.println(Error.failLogin);;
+            AuthServiceImpl authService = new AuthServiceImpl();
+
+            User user = authService.login(name, pass);
+            if(user != null){
+                ChangeFXML.changeFXML(event, "/view/home.fxml");
+                AlertUtils.showSuccessAlert(Message.wellcome + " " + name, Message.comback);
+            }
+            else {
+                System.out.println(Error.failLogin);
+                AlertUtils.showFailAlert(Error.fail, Error.failLogin);
+                return;
+            }
         }
+
     }
     @FXML
     public void forgetLG(ActionEvent event){
@@ -50,6 +72,10 @@ public class LoginController {
     @FXML
     public void registerLG(ActionEvent event){
         ChangeFXML.changeFXML(event, "/view/register.fxml");
+    }
+    private void resetErrorEmpty(){
+        errorUsername.setText("");
+        errorPassword.setText("");
     }
 
 

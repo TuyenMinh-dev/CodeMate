@@ -63,7 +63,7 @@
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></CheckBox>
-            <Button fx:id="loginLG" layoutX="82.0" layoutY="416.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="184.0" style="-fx-background-color: #1E8E04; -fx-background-radius: 12; -fx-border-radius: 12;" text="Đăng nhập" textFill="WHITE">
+            <Button fx:id="loginLG" layoutX="82.0" layoutY="416.0" mnemonicParsing="false" onAction="#loginLG" prefHeight="43.0" prefWidth="184.0" style="-fx-background-color: #1E8E04; -fx-background-radius: 12; -fx-border-radius: 12;" text="Đăng nhập" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
@@ -81,6 +81,8 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
+            <Label fx:id="errorUsername" layoutX="64.0" layoutY="278.0" prefHeight="17.0" prefWidth="219.0" textFill="RED" />
+            <Label fx:id="errorPassword" layoutX="87.0" layoutY="362.0" prefHeight="17.0" prefWidth="175.0" textFill="RED" />
          </children>
       </AnchorPane>
    </children>
