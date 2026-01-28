@@ -40,6 +40,7 @@ public class EmailUtils {
             Transport.send(message);
 
         } catch (MessagingException e) {
+            System.out.println("Lỗi ở đây");
             e.printStackTrace();
         }
 

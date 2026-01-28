@@ -81,7 +81,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Label fx:id="errorUsername" layoutX="64.0" layoutY="278.0" prefHeight="17.0" prefWidth="219.0" textFill="RED" />
+            <Label fx:id="errorUsername" layoutX="73.0" layoutY="278.0" prefHeight="17.0" prefWidth="202.0" textFill="RED" />
             <Label fx:id="errorPassword" layoutX="87.0" layoutY="362.0" prefHeight="17.0" prefWidth="175.0" textFill="RED" />
          </children>
       </AnchorPane>

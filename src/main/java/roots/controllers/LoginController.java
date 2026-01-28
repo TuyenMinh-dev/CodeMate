@@ -55,7 +55,6 @@ public class LoginController {
             User user = authService.login(name, pass);
             if(user != null){
                 ChangeFXML.changeFXML(event, "/view/home.fxml");
-                AlertUtils.showSuccessAlert(Message.wellcome + " " + name, Message.comback);
             }
             else {
                 System.out.println(Error.failLogin);

@@ -22,9 +22,9 @@ public class ForgetPasswordController {
 
     @FXML
     public void sendOTPFG(ActionEvent event){
-        resetErrorEmpty();
+        errorEmail.setText("");
         String email = emailFG.getText();
-        if (emailFG == null){
+        if (email == null){
             errorEmail.setText("Email không được để trống!");
             return;
         }
@@ -37,9 +37,9 @@ public class ForgetPasswordController {
 
     @FXML
     public void checkOTPFG(ActionEvent event){
-        resetErrorEmpty();
+        errorOTP.setText("");
         String otp = OTPFG.getText();
-        if(OTPFG == null){
+        if(otp == null){
             errorOTP.setText("Mã OTP không được để trống!");
             return;
         }
@@ -63,10 +63,5 @@ public class ForgetPasswordController {
     public void comeBackFG2(MouseEvent event){
         ChangeFXML.changeFXML(event, "/view/forgetPassword.fxml");
     }
-    private void resetErrorEmpty(){
-        errorEmail.setText("");
-        errorOTP.setText("");
-        errorPassword.setText("");
-        errorCheckPassword.setText("");
-    }
+
 }

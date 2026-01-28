@@ -18,7 +18,7 @@ public class EmailService {
         String otp = otpSend();
         String subject = "MÃ XÁC THỰC";
         String content = "Mã xác thực của bạn là " + otp
-                        + "\nVui lòng không chia sẻ mã  expiryTime = LocalDateTime.now().plusMinutes(3); này với bất kì ai!";
+                        + "\nVui lòng không chia sẻ mã này với bất kì ai!";
         EmailUtils.sendEmail(emailTo, subject, content);
         saveOTP(otp);
     }
