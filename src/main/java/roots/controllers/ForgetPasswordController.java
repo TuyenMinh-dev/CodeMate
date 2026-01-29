@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import roots.services.EmailService;
+import roots.services.impl.AuthServiceImpl;
 import roots.utils.ChangeFXML;
 import roots.utils.EmailUtils;
 
@@ -54,6 +55,39 @@ public class ForgetPasswordController {
             }
 
         }
+    }
+    @FXML
+    public void confirmPassword(ActionEvent event){
+        errorPassword.setText("");
+        errorCheckPassword.setText("");
+        String newPass = newPassword.getText();
+        String checkNewPass = checkNewPassword.getText();
+
+        boolean check = false;
+        if(newPass.isEmpty()){
+            errorPassword.setText("Mật khẩu mới không được để trống!");
+            check = true;
+        }
+        if(checkNewPass.isEmpty()){
+            errorCheckPassword.setText("Mật khẩu mới không được để trống!");
+            check = true;
+        }
+        else {
+            if(!checkNewPass.equals(newPass)){
+                errorCheckPassword.setText("Mật khẩu không trùng khớp!");
+                check = true;
+            }
+        }
+        if(check){
+            return;
+        }
+        else{
+            String email = emailFG.getText();
+            AuthServiceImpl authService = new AuthServiceImpl();
+            authService.forgetPassword(email, newPass);
+            ChangeFXML.changeFXML(event, "/view/login.fxml");
+        }
+
     }
     @FXML
     public void comeBackFG1(MouseEvent event){

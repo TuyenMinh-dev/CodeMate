@@ -24,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public User forgetPassword(String email, String newPassword) {
         User checkUser = loginDAO.getUserByEmail(email);
-
+        checkUser.setPassword(newPassword);
         return checkUser;
     }
 

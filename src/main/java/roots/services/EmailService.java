@@ -18,7 +18,8 @@ public class EmailService {
         String otp = otpSend();
         String subject = "MÃ XÁC THỰC";
         String content = "Mã xác thực của bạn là " + otp
-                        + "\nVui lòng không chia sẻ mã này với bất kì ai!";
+                        + "\nVui lòng không chia sẻ mã này với bất kì ai!"
+                        + "\nLưu ý: Mã xác thực chỉ có hiệu lực trong vòng 3 phút.";
         EmailUtils.sendEmail(emailTo, subject, content);
         saveOTP(otp);
     }
