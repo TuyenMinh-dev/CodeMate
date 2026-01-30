@@ -26,13 +26,17 @@ public class User {
     @Column(name ="email", nullable = false)
     private String email;
 
+    @Column(name ="otp", nullable = false)
+    private int otp;
+
     public User(){}
 
-    public User(String fullname,String username, String password, String email) {
+    public User(String fullname,String username, String password, String email, int otp) {
         this.fullname = fullname;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.otp = otp;
     }
 }
 
