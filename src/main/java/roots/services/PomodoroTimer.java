@@ -10,14 +10,12 @@ public class PomodoroTimer {
 
     private Timer timer;
     private int secondsLeft;
-    private PomodoroState state = PomodoroState.IDLE;
 
     private Consumer<Integer> onTick;
     private Consumer<PomodoroState> onStateChange;
-    private Runnable onFinish;
+    private Consumer<PomodoroState> onFinish;
 
-    //callback setter
-
+    // callback setter
     public void onTick(Consumer<Integer> callback) {
         this.onTick = callback;
     }
@@ -26,12 +24,11 @@ public class PomodoroTimer {
         this.onStateChange = callback;
     }
 
-    public void onFinish(Runnable callback) {
+    public void onFinish(Consumer<PomodoroState> callback) {
         this.onFinish = callback;
     }
 
-    //core timer
-
+    // public API
     public void startWork(int seconds) {
         start(seconds, PomodoroState.WORK);
     }
@@ -40,11 +37,10 @@ public class PomodoroTimer {
         start(seconds, PomodoroState.REST);
     }
 
-    private void start(int seconds, PomodoroState newState) {
+    private void start(int seconds, PomodoroState state) {
         stop();
 
         this.secondsLeft = seconds;
-        this.state = newState;
 
         if (onStateChange != null) {
             onStateChange.accept(state);
@@ -63,7 +59,7 @@ public class PomodoroTimer {
                 if (secondsLeft <= 0) {
                     stop();
                     if (onFinish != null) {
-                        onFinish.run();
+                        onFinish.accept(state);
                     }
                 }
             }
@@ -75,6 +71,5 @@ public class PomodoroTimer {
             timer.cancel();
             timer = null;
         }
-        state = PomodoroState.IDLE;
     }
 }

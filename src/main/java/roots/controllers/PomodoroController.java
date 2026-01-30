@@ -11,7 +11,7 @@ public class PomodoroController {
     private int workMinutes = 30;
     private final int breakMinutes = 5;
 
-    private  int continuousWorkSeconds = 0;
+    private int continuousWorkSeconds = 0;
 
     public PomodoroController() {
         timer.onTick(this::onTick);
@@ -19,16 +19,13 @@ public class PomodoroController {
         timer.onFinish(this::onFinish);
     }
 
-    //start
-
+    // start work
     public void startWork(int minutes) {
         workMinutes = minutes;
-        continuousWorkSeconds = 0;
         timer.startWork(minutes * 60);
     }
 
-    //các sự kiện diễn ra trong quá tình work
-
+    // tick event
     private void onTick(int secondsLeft) {
         if (state == PomodoroState.WORK) {
             continuousWorkSeconds++;
@@ -39,29 +36,27 @@ public class PomodoroController {
         this.state = newState;
     }
 
-    private void onFinish() {
-        if (state == PomodoroState.WORK) {
+    private void onFinish(PomodoroState finishedState) {
+        if (finishedState == PomodoroState.WORK) {
             onWorkFinished();
-        } else if (state == PomodoroState.REST) {
+        } else if (finishedState == PomodoroState.REST) {
             startWork(workMinutes);
         }
     }
 
-    //flow
-
+    // flow
     private void onWorkFinished() {
         state = PomodoroState.IDLE;
-        // accept phiên nghỉ or skip phiên nghỉ
+        // UI sẽ gọi acceptBreak() hoặc skipBreak()
     }
 
     public void acceptBreak() {
-        continuousWorkSeconds = 0;
+        continuousWorkSeconds = 0; // ✅ reset đúng chỗ
         timer.startRest(breakMinutes * 60);
     }
 
     public void skipBreak() {
-        if (continuousWorkSeconds >= 3600) {//continousWorkSeconds là kiểu đếm số thời gian làm việc liên tục
-                                         // (bản chất là số lần gọi onTick trong state Work)
+        if (continuousWorkSeconds >= 3600) {
             System.out.println("💧 Gợi ý: nên uống nước");
         }
         startWork(workMinutes);
