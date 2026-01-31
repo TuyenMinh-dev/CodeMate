@@ -5,6 +5,9 @@ import roots.entity.PomodoroState;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Consumer;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.application.Platform;
 
 public class PomodoroTimer {
 

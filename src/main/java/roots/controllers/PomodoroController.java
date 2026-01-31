@@ -1,27 +1,34 @@
 package roots.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.media.AudioClip;
 import roots.entity.PomodoroState;
 import roots.services.PomodoroTimer;
-
+import roots.services.StatService;
 
 public class PomodoroController {
 
+    @FXML private Label timeLabel;
+    @FXML private Label statusLabel;
+    @FXML private ChoiceBox<Integer> durationChoice;
+    @FXML private Button btnStart, btnBreak, btnSkip;
+    @FXML private HBox configBox;
+    @FXML private StackPane mainRoot;
+
     private PomodoroState state = PomodoroState.IDLE;
     private final PomodoroTimer timer = new PomodoroTimer();
+    private final StatService statService = new StatService();
 
     private int workMinutes = 30;
     private final int breakMinutes = 5;
 
+    // Biến đếm thời gian làm việc liên tục (giây)
     private int continuousWorkSeconds = 0;
-    @FXML
-    private ChoiceBox<Integer> durationChoice;
-    @FXML
-    public void initialize() {
-        durationChoice.getItems().addAll(25, 30, 35);
-        durationChoice.setValue(30); // recommend
-    }
+    private final int WATER_REMINDER_THRESHOLD = 3600; // 1 giờ = 3600 giây
 
     public PomodoroController() {
         timer.onTick(this::onTick);
@@ -29,50 +36,174 @@ public class PomodoroController {
         timer.onFinish(this::onFinish);
     }
 
-    // start work
-    public void startWork(int minutes) {
-        workMinutes = minutes;
-        timer.startWork(minutes * 60);
+    @FXML
+    public void initialize() {
+        durationChoice.getItems().addAll(25, 30, 35);
+        durationChoice.setValue(30);
+        updateTimeLabel(durationChoice.getValue() * 60);
+
+        // Lắng nghe thay đổi thời gian khi user chọn
+        durationChoice.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (state == PomodoroState.IDLE && newVal != null) {
+                updateTimeLabel(newVal * 60);
+            }
+        });
     }
 
-    // tick event
-    private void onTick(int secondsLeft) {
-        if (state == PomodoroState.WORK) {
-            continuousWorkSeconds++;
+    @FXML
+    public void handleStart() {
+        if (state == PomodoroState.IDLE) {
+            workMinutes = durationChoice.getValue();
+            timer.startWork(10);
+        } else {
+            // Nếu đang chạy mà bấm nút này (lúc này là nút Dừng)
+            stopAll();
         }
+    }
+
+    @FXML
+    public void handleBreak() {
+        showWaterPopup(); // Thông báo uống nước trước khi nghỉ
+        continuousWorkSeconds = 0; // Reset thời gian làm liên tục
+        timer.startRest(5);
+    }
+
+    @FXML
+    public void handleSkip() {
+        // Nếu đã làm quá 1 tiếng mà vẫn định Skip
+        if (continuousWorkSeconds >= 15) {
+            showWaterPopup();
+            // Tùy bạn: Cho làm tiếp luôn hoặc ép nghỉ. Ở đây mình nhắc xong cho làm tiếp:
+            continuousWorkSeconds = 0;
+        }
+        timer.startWork(10);
+    }
+
+    private void onTick(int secondsLeft) {
+        Platform.runLater(() -> {
+            updateTimeLabel(secondsLeft);
+            if (state == PomodoroState.WORK) {
+                continuousWorkSeconds++;
+                // Kiểm tra nếu đang làm mà chạm mốc 1 tiếng
+                if (continuousWorkSeconds == WATER_REMINDER_THRESHOLD) {
+                    statusLabel.setText("⚠️ Bạn đã làm 1 giờ rồi! Hãy uống nước.");
+                }
+            }
+        });
     }
 
     private void onStateChange(PomodoroState newState) {
         this.state = newState;
+        Platform.runLater(() -> {
+            // Xóa class cũ để tránh bị chồng chéo màu
+            mainRoot.getStyleClass().removeAll("work-mode", "rest-mode");
+
+            switch (newState) {
+                case WORK:
+                    mainRoot.getStyleClass().add("work-mode");
+                    statusLabel.setText("🚀 Đang tập trung làm việc...");
+                    setUIState(true);
+                    break;
+                case REST:
+                    mainRoot.getStyleClass().add("rest-mode");
+                    statusLabel.setText("☕ Nghỉ ngơi một chút nào!");
+                    setUIState(true);
+                    break;
+                case IDLE:
+                    statusLabel.setText("Sẵn sàng tập trung?");
+                    setUIState(false);
+                    break;
+            }
+        });
     }
 
     private void onFinish(PomodoroState finishedState) {
-        if (finishedState == PomodoroState.WORK) {
-            onWorkFinished();
-        } else if (finishedState == PomodoroState.REST) {
-            startWork(workMinutes);
-        }
+        Platform.runLater(() -> {
+            java.awt.Toolkit.getDefaultToolkit().beep();
+            if (finishedState == PomodoroState.WORK) {
+                statService.saveSession(workMinutes * 60);
+                statusLabel.setText("Hết giờ làm! Hãy uống nước."); // Bỏ icon lỗi
+
+                btnBreak.setVisible(true);
+                btnBreak.setManaged(true);
+                btnSkip.setVisible(true);
+                btnSkip.setManaged(true);
+
+                setUIState(false);
+            } else {
+                // Khi nghỉ xong, gọi stopAll để đưa App về trạng thái sẵn sàng làm việc tiếp
+                stopAll();
+                statusLabel.setText("Nghỉ xong rồi! Bắt đầu phiên mới nhé ?");
+            }
+        });
     }
 
-    // flow
-    private void onWorkFinished() {
+    private void stopAll() {
+        timer.stop();
         state = PomodoroState.IDLE;
-        // UI sẽ gọi acceptBreak() hoặc skipBreak()
+
+        // Đảm bảo ẩn các nút phụ đi
+        btnBreak.setVisible(false);
+        btnBreak.setManaged(false);
+        btnSkip.setVisible(false);
+        btnSkip.setManaged(false);
+
+        // Reset thời gian hiển thị về mức user chọn
+        updateTimeLabel(durationChoice.getValue() * 60);
+
+        // Gọi setUIState(false) để hiện lại nút BẮT ĐẦU và bảng chọn thời gian
+        setUIState(false);
     }
 
-    public void acceptBreak() {
-        continuousWorkSeconds = 0; // ✅ reset đúng chỗ
-        timer.startRest(breakMinutes * 60);
-    }
+    // Hàm thay đổi trạng thái giao diện
+    private void setUIState(boolean isRunning) {
+        // 1. Kiểm tra xem có đang trong trạng thái chờ người dùng chọn (Nghỉ/Bỏ qua) không
+        boolean isSelectionMode = btnBreak.isVisible();
 
-    public void skipBreak() {
-        if (continuousWorkSeconds >= 3600) {
-            System.out.println("💧 Gợi ý: nên uống nước");
+        // 2. Điều khiển nút Start/Stop
+        // Nếu đang hiện 2 nút kia thì ẩn hẳn Start để tránh lệch
+        btnStart.setVisible(!isSelectionMode);
+        btnStart.setManaged(!isSelectionMode);
+        btnStart.setText(isRunning ? "DỪNG" : "BẮT ĐẦU");
+
+        // 3. Điều khiển bảng chọn thời gian (Config)
+        // Chỉ hiện khi App đang rảnh (không chạy, không nghỉ, không chờ chọn)
+        boolean showConfig = !isRunning && !isSelectionMode && state == PomodoroState.IDLE;
+        configBox.setVisible(showConfig);
+        configBox.setManaged(showConfig);
+
+        // 4. Nếu quay về trạng thái rảnh (IDLE), đảm bảo ẩn các nút phụ
+        if (state == PomodoroState.IDLE) {
+            btnBreak.setVisible(false);
+            btnBreak.setManaged(false);
+            btnSkip.setVisible(false);
+            btnSkip.setManaged(false);
         }
-        startWork(workMinutes);
     }
 
-    public PomodoroState getState() {
-        return state;
+    private void updateTimeLabel(int totalSeconds) {
+        int mins = totalSeconds / 60;
+        int secs = totalSeconds % 60;
+        timeLabel.setText(String.format("%02d:%02d", mins, secs));
+    }
+
+    private void showWaterPopup() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Nhắc nhở");
+        alert.setHeaderText(null);
+        alert.setContentText("💧 Đã đến lúc bổ sung nước cho cơ thể bạn ơi!");
+        alert.showAndWait();
+    }
+
+    private void playAlarm() {
+        try {
+            // Bạn cần bỏ 1 file alarm.mp3 vào thư mục resources nhé
+            String path = getClass().getResource("/alarm.mp3").toExternalForm();
+            AudioClip alert = new AudioClip(path);
+            alert.play();
+        } catch (Exception e) {
+            System.out.println("Không tìm thấy file chuông, dùng Beep mặc định.");
+            java.awt.Toolkit.getDefaultToolkit().beep();
+        }
     }
 }
