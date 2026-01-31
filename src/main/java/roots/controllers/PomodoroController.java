@@ -1,7 +1,10 @@
 package roots.controllers;
 
+import javafx.fxml.FXML;
+import javafx.scene.control.ChoiceBox;
 import roots.entity.PomodoroState;
 import roots.services.PomodoroTimer;
+
 
 public class PomodoroController {
 
@@ -12,6 +15,13 @@ public class PomodoroController {
     private final int breakMinutes = 5;
 
     private int continuousWorkSeconds = 0;
+    @FXML
+    private ChoiceBox<Integer> durationChoice;
+    @FXML
+    public void initialize() {
+        durationChoice.getItems().addAll(25, 30, 35);
+        durationChoice.setValue(30); // recommend
+    }
 
     public PomodoroController() {
         timer.onTick(this::onTick);
