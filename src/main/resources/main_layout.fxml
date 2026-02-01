@@ -12,6 +12,7 @@
             <Button onAction="#showTodoList" styleClass="menu-btn" text="✅ Todo List" maxWidth="Infinity" />
             <Button onAction="#showStatistics" styleClass="menu-btn" text="📊 Thống kê" maxWidth="Infinity" />
 
+
             <Region VBox.vgrow="ALWAYS" />
             <Label text="Version 1.0" style="-fx-text-fill: #64748b; -fx-padding: 10;" />
         </VBox>
