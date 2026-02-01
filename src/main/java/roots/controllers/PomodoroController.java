@@ -18,6 +18,7 @@ public class PomodoroController {
     @FXML private Button btnStart, btnBreak, btnSkip;
     @FXML private HBox configBox;
     @FXML private StackPane mainRoot;
+    @FXML private Button btnStat;
 
     private PomodoroState state = PomodoroState.IDLE;
     private final PomodoroTimer timer = new PomodoroTimer();
@@ -161,18 +162,24 @@ public class PomodoroController {
         boolean isSelectionMode = btnBreak.isVisible();
 
         // 2. Điều khiển nút Start/Stop
-        // Nếu đang hiện 2 nút kia thì ẩn hẳn Start để tránh lệch
         btnStart.setVisible(!isSelectionMode);
         btnStart.setManaged(!isSelectionMode);
         btnStart.setText(isRunning ? "DỪNG" : "BẮT ĐẦU");
 
         // 3. Điều khiển bảng chọn thời gian (Config)
-        // Chỉ hiện khi App đang rảnh (không chạy, không nghỉ, không chờ chọn)
         boolean showConfig = !isRunning && !isSelectionMode && state == PomodoroState.IDLE;
         configBox.setVisible(showConfig);
         configBox.setManaged(showConfig);
 
-        // 4. Nếu quay về trạng thái rảnh (IDLE), đảm bảo ẩn các nút phụ
+        // 4. ĐIỀU KHIỂN NÚT LỊCH SỬ (btnStat)
+        // Chỉ hiện nút lịch sử khi KHÔNG chạy và KHÔNG trong chế độ chọn nghỉ/bỏ qua
+        if (btnStat != null) {
+            boolean showStat = !isRunning && !isSelectionMode && state == PomodoroState.IDLE;
+            btnStat.setVisible(showStat);
+            btnStat.setManaged(showStat);
+        }
+
+        // 5. Nếu quay về trạng thái rảnh (IDLE), đảm bảo ẩn các nút phụ
         if (state == PomodoroState.IDLE) {
             btnBreak.setVisible(false);
             btnBreak.setManaged(false);
@@ -197,13 +204,27 @@ public class PomodoroController {
 
     private void playAlarm() {
         try {
-            // Bạn cần bỏ 1 file alarm.mp3 vào thư mục resources nhé
+
             String path = getClass().getResource("/alarm.mp3").toExternalForm();
             AudioClip alert = new AudioClip(path);
             alert.play();
         } catch (Exception e) {
             System.out.println("Không tìm thấy file chuông, dùng Beep mặc định.");
             java.awt.Toolkit.getDefaultToolkit().beep();
+        }
+    }
+    @FXML
+    public void showStatistics() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/statistics.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("Thống kê");
+            stage.setScene(new javafx.scene.Scene(root, 750, 550));
+            stage.show();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
         }
     }
 }

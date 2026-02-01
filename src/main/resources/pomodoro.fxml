@@ -24,8 +24,13 @@
         <HBox fx:id="buttonContainer" alignment="CENTER" spacing="20.0">
             <children>
                 <Button fx:id="btnStart" onAction="#handleStart" styleClass="btn, btn-primary" text="BẮT ĐẦU" />
+
                 <Button fx:id="btnBreak" managed="false" visible="false" onAction="#handleBreak" styleClass="btn, btn-success" text="NGHỈ NGƠI" />
                 <Button fx:id="btnSkip" managed="false" visible="false" onAction="#handleSkip" styleClass="btn, btn-warning" text="BỎ QUA" />
+
+                <Button fx:id="btnStat" onAction="#showStatistics" styleClass="btn"
+                        style="-fx-background-color: rgba(255,255,255,0.1); -fx-text-fill: white;"
+                        text="📊 LỊCH SỬ" />
             </children>
         </HBox>
     </VBox>
