@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
@@ -42,6 +44,8 @@
                   <Font size="10.0" />
                </font>
             </Label>
+            <Circle fill="#1bbf20" layoutX="50.0" layoutY="107.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" />
+            <Circle fill="DODGERBLUE" layoutX="90.0" layoutY="107.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" />
          </children></AnchorPane>
       <AnchorPane layoutX="189.0" layoutY="441.0" prefHeight="135.0" prefWidth="146.0" style="-fx-background-color: rgba(10,-50,10,0.56); -fx-background-radius: 20;" />
       <AnchorPane layoutX="24.0" layoutY="441.0" prefHeight="135.0" prefWidth="146.0" style="-fx-background-color: rgba(10,-50,10,0.56); -fx-background-radius: 20;">
@@ -67,6 +71,7 @@
                   <Font name="Corbel" size="16.0" />
                </font>
             </Text>
+            <TextField layoutX="11.0" layoutY="43.0" prefHeight="9.0" prefWidth="103.0" promptText="Thêm nhiệm vụ..." style="-fx-background-color: #393737;" />
          </children></AnchorPane>
       <AnchorPane layoutX="189.0" layoutY="141.0" prefHeight="135.0" prefWidth="146.0" style="-fx-background-color: rgba(10,-50,10,0.56); -fx-background-radius: 20;">
          <children>
@@ -75,6 +80,12 @@
                   <Font name="Corbel" size="16.0" />
                </font>
             </Text>
+            <Circle fill="DODGERBLUE" layoutX="73.0" layoutY="68.0" radius="26.0" stroke="BLACK" strokeType="INSIDE" />
+            <Label layoutX="7.0" layoutY="94.0" prefHeight="52.0" prefWidth="133.0" text="Sau mỗi 20 phút làm việc, màn hình sẽ tạm khóa 20 giây để bạn thư giãn mắt" textFill="WHITE" wrapText="true">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
          </children></AnchorPane>
       <Label layoutX="111.0" layoutY="32.0" text="CODEMATE" textFill="#f2ecec">
          <font>
