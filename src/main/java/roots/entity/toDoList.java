@@ -46,6 +46,7 @@ public class toDoList {
         this.completed = completed;
     }
     @Override
+
     public String toString(){
         return title;
     }
