@@ -62,7 +62,8 @@
             <CheckBox fx:id="rememberLG" layoutX="64.0" layoutY="380.0" mnemonicParsing="false" text="Ghi nhớ" textFill="WHITE">
                <cursor>
                   <Cursor fx:constant="HAND" />
-               </cursor></CheckBox>
+               </cursor>
+            </CheckBox>
             <Button fx:id="loginLG" layoutX="82.0" layoutY="416.0" mnemonicParsing="false" onAction="#loginLG" prefHeight="43.0" prefWidth="184.0" style="-fx-background-color: #1E8E04; -fx-background-radius: 12; -fx-border-radius: 12;" text="Đăng nhập" textFill="WHITE">
                <font>
                   <Font size="15.0" />
@@ -75,7 +76,8 @@
             <Button fx:id="forgetLG" layoutX="174.0" layoutY="375.0" mnemonicParsing="false" onAction="#forgetLG" prefHeight="27.0" prefWidth="119.0" style="-fx-background-color: transparent;" text="Quên mật khẩu?" textFill="WHITE">
                <cursor>
                   <Cursor fx:constant="HAND" />
-               </cursor></Button>
+               </cursor>
+            </Button>
             <Button fx:id="registerLG" layoutX="189.0" layoutY="479.0" mnemonicParsing="false" onAction="#registerLG" style="-fx-background-color: transperant;" text="Đăng ký ngay" textFill="RED">
                <cursor>
                   <Cursor fx:constant="HAND" />
@@ -83,6 +85,18 @@
             </Button>
             <Label fx:id="errorUsername" layoutX="73.0" layoutY="278.0" prefHeight="17.0" prefWidth="202.0" textFill="RED" />
             <Label fx:id="errorPassword" layoutX="87.0" layoutY="362.0" prefHeight="17.0" prefWidth="175.0" textFill="RED" />
+            <TextField fx:id="passwordTextLG" layoutX="64.0" layoutY="328.0" prefHeight="34.0" prefWidth="219.0" visible="false" />
+            <Button fx:id="showPassword" layoutX="249.0" layoutY="328.0" mnemonicParsing="false" onAction="#showPassword" prefHeight="34.0" prefWidth="34.0" style="-fx-padding: 0; -fx-background-color: transparent;">
+               <graphic>
+                  <ImageView fx:id="iconEYE" fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../assets/images/icon/closeEye.png" />
+                     </image></ImageView>
+               </graphic>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </Button>
          </children>
       </AnchorPane>
    </children>
