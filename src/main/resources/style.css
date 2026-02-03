@@ -91,3 +91,65 @@
     -fx-background-color: rgba(255, 255, 255, 0.05);
     -fx-text-fill: white;
 }
+
+.list-todo, .list-view {
+    -fx-background-color: #1e293b;
+    -fx-control-inner-background: #1e293b;
+    -fx-background-radius: 10;
+    -fx-border-color: #334155;
+}
+
+.todo-label {
+    -fx-text-fill: white;
+}
+.list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.list-cell {
+    -fx-background-color: #1e293b; /* Màu xanh đen nhạt */
+    -fx-text-fill: white;
+    -fx-padding: 10;
+    -fx-background-radius: 5;
+    -fx-margin: 5;
+}
+
+.list-cell:hover {
+    -fx-background-color: #334155;
+}
+
+.input-field {
+    -fx-background-color: #1e293b;
+    -fx-text-fill: white;
+    -fx-border-color: #334155;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+}
+
+.modern-list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-control-inner-background: transparent;
+}
+
+.btn-filter {
+    -fx-background-color: #334155;
+    -fx-text-fill: #94a3b8;
+    -fx-background-radius: 15;
+    -fx-padding: 5 15;
+}
+.btn-filter:hover {
+    -fx-background-color: #475569;
+    -fx-text-fill: white;
+}
+
+
+.custom-progress .bar {
+    -fx-background-color: linear-gradient(to right, #3b82f6, #06b6d4);
+    -fx-background-radius: 10;
+}
+.custom-progress .track {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 10;
+}

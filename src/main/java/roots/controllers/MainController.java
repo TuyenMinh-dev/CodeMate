@@ -23,7 +23,17 @@ public class MainController {
 
     @FXML public void showPomodoro() { setPage("/pomodoro.fxml"); }
 
-    @FXML public void showTodoList() { setPage("/todo.fxml"); }
+    @FXML
+    public void showTodoList() {
+        try {
+            // Đảm bảo tên file "/todo.fxml" viết đúng như tên bạn lưu trong resources
+            Node node = FXMLLoader.load(getClass().getResource("/todo.fxml"));
+            contentArea.getChildren().setAll(node);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Lỗi: Không tìm thấy file todo.fxml hoặc lỗi trong Controller!");
+        }
+    }
 
     @FXML public void showStatistics() {
         // Có thể mở cửa sổ mới như cũ hoặc nhúng vào Dashboard tùy bạn
