@@ -18,12 +18,12 @@
             <Image url="@../assets/images/backgrounds/home.jpg" />
          </image>
       </ImageView>
-      <Text fill="WHITE" layoutX="33.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Dừng lại một chút không có nghĩa là tụt hậu">
+      <Text fill="WHITE" layoutX="43.0" layoutY="96.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Dừng lại một chút không có nghĩa là tụt hậu">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <Text fill="WHITE" layoutX="103.0" layoutY="107.0" strokeType="OUTSIDE" strokeWidth="0.0" text="mà là để bước xa hơn">
+      <Text fill="WHITE" layoutX="106.0" layoutY="115.0" strokeType="OUTSIDE" strokeWidth="0.0" text="mà là để bước xa hơn">
          <font>
             <Font size="14.0" />
          </font>
@@ -90,9 +90,9 @@
                </font>
             </Label>
          </children></AnchorPane>
-      <Label layoutX="113.0" layoutY="24.0" text="CODEMATE">
+      <Label layoutX="97.0" layoutY="26.0" text="CODEMATE">
          <font>
-            <Font size="23.0" />
+            <Font name="Bodoni MT Black" size="26.0" />
          </font>
          <effect>
             <Blend />
