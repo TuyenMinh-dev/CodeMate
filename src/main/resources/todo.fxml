@@ -1,55 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="12"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="roots.controllers.toDoController"
-      style="-fx-padding: 16;">
+<VBox spacing="20" style="-fx-padding: 30; -fx-background-color: transparent;"
+      xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
+      fx:controller="roots.controllers.toDoController">
 
-    <!-- ADD TASK -->
+    <Label styleClass="title-label" text="DANH SÁCH CÔNG VIỆC" />
+
     <HBox spacing="10">
-        <TextField fx:id="txtTitle"
-                   promptText="Add new task..."
-                   HBox.hgrow="ALWAYS"/>
-        <Button text="+ Add"
-                onAction="#handleAdd"
-                style="
-                    -fx-background-color: #4CAF50;
-                    -fx-text-fill: white;
-                    -fx-font-weight: bold;
-                "/>
+        <TextField fx:id="txtTitle" promptText="Thêm việc mới..." HBox.hgrow="ALWAYS"
+                   style="-fx-background-color: #1e293b; -fx-text-fill: white; -fx-border-color: #334155; -fx-padding: 10; -fx-background-radius: 8;" />
+        <Button onAction="#handleAdd" styleClass="btn-primary" text="+ THÊM" />
     </HBox>
 
-    <!-- FILTER -->
     <HBox spacing="10">
-        <Button text="All" onAction="#filterAll"/>
-        <Button text="Done" onAction="#filterDone"/>
-        <Button text="Undone" onAction="#filterUndone"/>
+        <Button onAction="#filterAll" styleClass="btn-filter" text="Tất cả" />
+        <Button onAction="#filterDone" styleClass="btn-filter" text="Đã xong" />
+        <Button onAction="#filterUndone" styleClass="btn-filter" text="Chưa xong" />
     </HBox>
 
-    <!-- TITLE -->
-    <Label fx:id="lblListTitle"
-           text="LIST TASKS"
-           style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <ListView fx:id="listTodo"
+              style="-fx-background-color: transparent; -fx-control-inner-background: transparent; -fx-background-insets: 0;"
+              VBox.vgrow="ALWAYS"
+              maxHeight="300" />
 
-    <!-- LIST CONTAINER -->
-    <VBox style="
-        -fx-background-color: #f9f9f9;
-        -fx-background-radius: 10;
-        -fx-padding: 10;
-        -fx-border-color: #ddd;
-        -fx-border-radius: 10;
-    ">
-        <ListView fx:id="listTodo"/>
+    <VBox spacing="10" style="-fx-padding: 10 0 0 0;">
+        <Label style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;" text="Tiến độ hoàn thành" />
+        <ProgressBar fx:id="progressBar"
+                     prefWidth="600.0"
+                     progress="0.0"
+                     styleClass="custom-progress"
+                     style="-fx-min-height: 15; -fx-pref-height: 15;" />
+        <Label fx:id="lblProgress" style="-fx-text-fill: white;" text="0%" />
     </VBox>
-
-    <VBox spacing="6">
-        <Label text="Hôm nay" style="-fx-font-weight: bold"/>
-        <ProgressBar fx:id="progressBar" prefWidth="300"/>
-        <Label fx:id="lblProgress" text="0%"/>
-    </VBox>
-
-
 </VBox>

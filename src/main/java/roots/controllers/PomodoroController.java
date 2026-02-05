@@ -27,9 +27,8 @@ public class PomodoroController {
     private int workMinutes = 30;
     private final int breakMinutes = 5;
 
-    // Biến đếm thời gian làm việc liên tục (giây)
     private int continuousWorkSeconds = 0;
-    private final int WATER_REMINDER_THRESHOLD = 3600; // 1 giờ = 3600 giây
+    private final int WATER_REMINDER_THRESHOLD = 3600;
 
     public PomodoroController() {
         timer.onTick(this::onTick);
@@ -43,7 +42,6 @@ public class PomodoroController {
         durationChoice.setValue(30);
         updateTimeLabel(durationChoice.getValue() * 60);
 
-        // Lắng nghe thay đổi thời gian khi user chọn
         durationChoice.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (state == PomodoroState.IDLE && newVal != null) {
                 updateTimeLabel(newVal * 60);
@@ -57,14 +55,14 @@ public class PomodoroController {
             workMinutes = durationChoice.getValue();
             timer.startWork(10);
         } else {
-            // Nếu đang chạy mà bấm nút này (lúc này là nút Dừng)
+
             stopAll();
         }
     }
 
     @FXML
     public void handleBreak() {
-        showWaterPopup(); // Thông báo uống nước trước khi nghỉ
+        showWaterPopup();
         continuousWorkSeconds = 0; // Reset thời gian làm liên tục
         timer.startRest(5);
     }
@@ -74,7 +72,7 @@ public class PomodoroController {
         // Nếu đã làm quá 1 tiếng mà vẫn định Skip
         if (continuousWorkSeconds >= 15) {
             showWaterPopup();
-            // Tùy bạn: Cho làm tiếp luôn hoặc ép nghỉ. Ở đây mình nhắc xong cho làm tiếp:
+
             continuousWorkSeconds = 0;
         }
         timer.startWork(10);

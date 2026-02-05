@@ -6,221 +6,93 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.SVGPath;
 import roots.entity.toDoList;
 import roots.services.toDoService;
-
 import java.util.function.Supplier;
 
 public class toDoCell extends ListCell<toDoList> {
-
     private final CheckBox checkBox = new CheckBox();
     private final Label lblTitle = new Label();
     private final TextField txtEdit = new TextField();
-
-    private final Button btnEdit = createIconButton(editIcon());
-    private final Button btnDelete = createIconButton(deleteIcon());
-    private final Button btnMore = createIconButton(moreIcon());
-
-    private final HBox actionBox = new HBox(2);
-    private final HBox container = new HBox(8);
-
+    private final Button btnEdit = createIconButton("M3 17.25V21h3.75L17.81 9.94l-3.75-3.75z");
+    private final Button btnDelete = createIconButton("M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z");
+    private final HBox container = new HBox(12);
     private final toDoService todoService;
     private final Supplier<String> currentFilter;
-    private final Runnable onDataChanged; // 🔥 CALLBACK
+    private final Runnable onDataChanged;
 
-    public toDoCell(
-            toDoService todoService,
-            Supplier<String> currentFilter,
-            Runnable onDataChanged
-    ) {
+    public toDoCell(toDoService todoService, Supplier<String> currentFilter, Runnable onDataChanged) {
         this.todoService = todoService;
         this.currentFilter = currentFilter;
         this.onDataChanged = onDataChanged;
-
         initLayout();
         initEvents();
     }
 
-    /* ================= LAYOUT ================= */
-
     private void initLayout() {
-        lblTitle.setStyle("-fx-font-size: 14px;");
         txtEdit.setVisible(false);
         txtEdit.setManaged(false);
-
-        actionBox.getChildren().addAll(btnEdit, btnDelete, btnMore);
-        actionBox.setAlignment(Pos.CENTER_RIGHT);
+        txtEdit.setStyle("-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #3b82f6;");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        container.getChildren().addAll(
-                checkBox,
-                lblTitle,
-                txtEdit,
-                spacer,
-                actionBox
-        );
+        HBox actionBox = new HBox(8, btnEdit, btnDelete);
+        actionBox.setAlignment(Pos.CENTER_RIGHT);
 
+        container.getChildren().addAll(checkBox, lblTitle, txtEdit, spacer, actionBox);
         container.setAlignment(Pos.CENTER_LEFT);
-        container.setStyle("""
-            -fx-padding: 6 10;
-            -fx-background-color: #f9f9f9;
-            -fx-background-radius: 10;
-        """);
+        container.setStyle("-fx-padding: 10 15; -fx-background-color: #1e293b; -fx-background-radius: 10; -fx-border-color: #334155; -fx-border-radius: 10;");
     }
-
-    /* ================= EVENTS ================= */
 
     private void initEvents() {
-
         checkBox.setOnAction(e -> {
-            toDoList item = getItem();
-            if (item != null) {
-                todoService.setCompleted(item, checkBox.isSelected());
-                onDataChanged.run(); // 🔥 UPDATE %
+            if (getItem() != null) {
+                todoService.setCompleted(getItem(), checkBox.isSelected());
+                onDataChanged.run();
             }
         });
-
-        btnEdit.setOnAction(e -> startTitleEdit());
-
         btnDelete.setOnAction(e -> {
-            toDoList item = getItem();
-            if (item != null) {
-                todoService.delete(item);
-                getListView().getItems().remove(item);
-                onDataChanged.run(); // 🔥 UPDATE %
+            if (getItem() != null) {
+                todoService.delete(getItem());
+                getListView().getItems().remove(getItem());
+                onDataChanged.run();
             }
         });
-
-        txtEdit.focusedProperty().addListener((obs, o, n) -> {
-            if (!n) saveEdit();
+        btnEdit.setOnAction(e -> {
+            lblTitle.setManaged(false); lblTitle.setVisible(false);
+            txtEdit.setManaged(true); txtEdit.setVisible(true);
+            txtEdit.setText(getItem().getTitle());
+            txtEdit.requestFocus();
         });
-
-        txtEdit.setOnAction(e -> saveEdit());
+        txtEdit.setOnAction(e -> {
+            getItem().setTitle(txtEdit.getText());
+            todoService.update(getItem());
+            lblTitle.setText(txtEdit.getText());
+            txtEdit.setManaged(false); txtEdit.setVisible(false);
+            lblTitle.setManaged(true); lblTitle.setVisible(true);
+        });
     }
-
-    /* ================= EDIT ================= */
-
-    private void startTitleEdit() {
-        txtEdit.setText(lblTitle.getText());
-
-        lblTitle.setVisible(false);
-        lblTitle.setManaged(false);
-
-        actionBox.setVisible(false);
-        actionBox.setManaged(false);
-
-        checkBox.setVisible(false);
-        checkBox.setManaged(false);
-
-        txtEdit.setVisible(true);
-        txtEdit.setManaged(true);
-        txtEdit.requestFocus();
-        txtEdit.selectAll();
-    }
-
-    private void saveEdit() {
-        toDoList item = getItem();
-        if (item == null) return;
-
-        String newTitle = txtEdit.getText().trim();
-        if (!newTitle.isEmpty()) {
-            item.setTitle(newTitle);
-            todoService.update(item);
-            lblTitle.setText(newTitle);
-        }
-
-        txtEdit.setVisible(false);
-        txtEdit.setManaged(false);
-
-        lblTitle.setVisible(true);
-        lblTitle.setManaged(true);
-
-        boolean isAll = "ALL".equals(currentFilter.get());
-
-        actionBox.setVisible(isAll);
-        actionBox.setManaged(isAll);
-
-        checkBox.setVisible(isAll);
-        checkBox.setManaged(isAll);
-
-        onDataChanged.run(); // 🔥 UPDATE %
-    }
-
-    /* ================= UPDATE ================= */
 
     @Override
     protected void updateItem(toDoList item, boolean empty) {
         super.updateItem(item, empty);
-
-        if (empty || item == null) {
-            setGraphic(null);
-            return;
+        if (empty || item == null) { setGraphic(null); setStyle("-fx-background-color: transparent;"); }
+        else {
+            lblTitle.setText(item.getTitle());
+            checkBox.setSelected(item.isCompleted());
+            if (item.isCompleted()) {
+                lblTitle.setStyle("-fx-text-fill: #64748b; -fx-strikethrough: true; -fx-font-size: 14px;");
+            } else {
+                lblTitle.setStyle("-fx-text-fill: white; -fx-strikethrough: false; -fx-font-size: 14px;");
+            }
+            setGraphic(container);
+            setStyle("-fx-background-color: transparent; -fx-padding: 5 0;");
         }
-
-        txtEdit.setVisible(false);
-        txtEdit.setManaged(false);
-        lblTitle.setVisible(true);
-        lblTitle.setManaged(true);
-
-        lblTitle.setText(item.getTitle());
-        checkBox.setSelected(item.isCompleted());
-
-        boolean isAll = "ALL".equals(currentFilter.get());
-
-        checkBox.setVisible(isAll);
-        checkBox.setManaged(isAll);
-        actionBox.setVisible(isAll);
-        actionBox.setManaged(isAll);
-
-        if (item.isCompleted() && isAll) {
-            lblTitle.setStyle("-fx-text-fill: #9e9e9e; -fx-strikethrough: true;");
-        } else {
-            lblTitle.setStyle("-fx-text-fill: black; -fx-strikethrough: false;");
-        }
-
-        setGraphic(container);
     }
 
-    /* ================= ICONS ================= */
-
-    private Button createIconButton(SVGPath icon) {
-        icon.setScaleX(0.7);
-        icon.setScaleY(0.7);
-        icon.setStyle("-fx-fill: #666;");
-
-        Button btn = new Button();
-        btn.setGraphic(icon);
-        btn.setPrefSize(20, 20);
-        btn.setMinSize(20, 20);
-        btn.setMaxSize(20, 20);
-        btn.setStyle("""
-            -fx-background-color: transparent;
-            -fx-background-radius: 6;
-            -fx-cursor: hand;
-        """);
-        return btn;
-    }
-
-    private SVGPath editIcon() {
-        SVGPath p = new SVGPath();
-        p.setContent("M3 17.25V21h3.75L17.81 9.94l-3.75-3.75z");
-        return p;
-    }
-
-    private SVGPath deleteIcon() {
-        SVGPath p = new SVGPath();
-        p.setContent("M6 7h12v2H6z M8 9h8v10H8z M9 4h6l1 1h3v2H5V5h3z");
-        return p;
-    }
-
-    private SVGPath moreIcon() {
-        SVGPath p = new SVGPath();
-        p.setContent(
-                "M12 8a2 2 0 1 0 0-4 " +
-                        "2 2 0 0 0 0 4zm0 6a2 2 0 1 0 0-4 " +
-                        "2 2 0 0 0 0 4zm0 6a2 2 0 1 0 0-4 " +
-                        "2 2 0 0 0 0 4z"
-        );
-        return p;
+    private Button createIconButton(String svg) {
+        SVGPath path = new SVGPath(); path.setContent(svg); path.setStyle("-fx-fill: #94a3b8;");
+        Button b = new Button(); b.setGraphic(path);
+        b.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+        return b;
     }
 }
