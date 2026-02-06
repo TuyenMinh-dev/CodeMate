@@ -1,4 +1,5 @@
 package roots.dao;
+import java.time.LocalDate;
 import java.util.List;
 import roots.entity.toDoList;
 import jakarta.persistence.EntityManager;
@@ -63,6 +64,24 @@ public class toDoListDao {
                 .getResultList();
         em.close();
         return list;
+    }
+    public static List<toDoList> findByDate(LocalDate date) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("FROM toDoList WHERE createdAt = :date", toDoList.class)
+                    .setParameter("date", date)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public static double getCompletionRate(LocalDate date) {
+        List<toDoList> tasks = findByDate(date);
+        if (tasks.isEmpty()) return 0.0;
+
+        long doneCount = tasks.stream().filter(toDoList::isCompleted).count();
+        return (double) doneCount / tasks.size();
     }
 
 
