@@ -81,17 +81,20 @@ public class toDoController implements Initializable {
 
     @FXML
     private void handleStartDay() {
-        // 1. Chuyển đổi giao diện
+        // 1. Quét toàn bộ task chưa xong từ quá khứ và đẩy về hôm nay
+        toDoListDao.carryOverPendingTasks(LocalDate.now());
+
+        // 2. Chuyển đổi giao diện (Như cũ)
         startDayBox.setVisible(false);
         startDayBox.setManaged(false);
         mainTodoBox.setVisible(true);
         mainTodoBox.setManaged(true);
 
-        // 2. Load dữ liệu từ Database (Sử dụng hàm findByDate bước 2 đã làm)
+        // 3. Load dữ liệu (Lúc này allTodos sẽ bao gồm cả việc mới của hôm nay + việc cũ vừa được đẩy sang)
         allTodos.clear();
         allTodos.addAll(toDoListDao.findByDate(LocalDate.now()));
 
-        // 3. Cập nhật giao diện
+        // 4. Cập nhật giao diện (Như cũ)
         listTodo.setItems(allTodos);
         updateProgress();
     }
@@ -117,40 +120,46 @@ public class toDoController implements Initializable {
     }
     @FXML
     private void handleEndDay() {
-        // 1. Lấy danh sách việc chưa xong của hôm nay
+        long totalTasks = allTodos.size();
         List<toDoList> pendingTasks = allTodos.stream()
                 .filter(t -> !t.isCompleted())
                 .toList();
+        long completedCount = totalTasks - pendingTasks.size();
 
-        // 2. Tạo thông báo (Alert)
+        double completionRate = (totalTasks == 0) ? 0 : (double) completedCount / totalTasks;
+        int percent = (int) (completionRate * 100);
+
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Tổng kết ngày làm việc");
-        alert.setHeaderText("Hôm nay bạn đã hoàn thành " + (int)(toDoListDao.getCompletionRate(LocalDate.now()) * 100) + "% công việc.");
 
-        if (pendingTasks.isEmpty()) {
+
+        alert.setHeaderText("Hôm nay bạn đã hoàn thành " + percent + "% công việc.");
+
+        if (pendingTasks.isEmpty() && totalTasks > 0) {
             alert.setContentText("Tuyệt vời! Bạn đã dọn dẹp sạch sẽ danh sách việc cần làm.");
+        } else if (totalTasks == 0) {
+            alert.setContentText("Hôm nay bạn chưa có công việc nào để tổng kết.");
         } else {
             alert.setContentText("Bạn vẫn còn " + pendingTasks.size() + " việc chưa xong. Bạn muốn làm gì?");
         }
 
-        // 3. Tạo các nút lựa chọn
         ButtonType btnTomorrow = new ButtonType("Chuyển sang mai");
         ButtonType btnKeep = new ButtonType("Để lại hôm nay");
         ButtonType btnCancel = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
 
         alert.getButtonTypes().setAll(btnTomorrow, btnKeep, btnCancel);
 
-        // 4. Xử lý khi người dùng bấm nút
+
         alert.showAndWait().ifPresent(response -> {
             if (response == btnTomorrow) {
                 for (toDoList t : pendingTasks) {
-                    t.setCreatedAt(LocalDate.now().plusDays(1)); // Đổi ngày sang ngày mai
-                    todoService.update(t); // Cập nhật vào Database
+                    t.setCreatedAt(LocalDate.now().plusDays(1));
+                    todoService.update(t);
                 }
-                allTodos.removeAll(pendingTasks); // Xóa khỏi danh sách hiển thị hiện tại
-                updateProgress(); // Cập nhật lại thanh %
+                allTodos.removeAll(pendingTasks);
+                updateProgress();
 
-                // Thông báo khích lệ thêm
                 showMotivationAlert();
             }
         });

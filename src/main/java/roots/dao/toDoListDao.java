@@ -77,11 +77,41 @@ public class toDoListDao {
     }
 
     public static double getCompletionRate(LocalDate date) {
-        List<toDoList> tasks = findByDate(date);
-        if (tasks.isEmpty()) return 0.0;
+        EntityManager em = emf.createEntityManager();
+        try {
+            List<toDoList> tasks = em.createQuery("FROM toDoList WHERE createdAt = :date", toDoList.class)
+                    .setParameter("date", date)
+                    .getResultList();
+            if (tasks.isEmpty()) return 0.0;
+            return (double) tasks.stream().filter(toDoList::isCompleted).count() / tasks.size();
+        } finally {
+            em.close();
+        }
+    }
+    public static void carryOverPendingTasks(LocalDate today) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
 
-        long doneCount = tasks.stream().filter(toDoList::isCompleted).count();
-        return (double) doneCount / tasks.size();
+            // Tìm những task chưa xong của những ngày trước
+            List<toDoList> pendingTasks = em.createQuery(
+                            "FROM toDoList WHERE completed = false AND createdAt < :today", toDoList.class)
+                    .setParameter("today", today)
+                    .getResultList();
+
+            // Đổi ngày của chúng thành hôm nay
+            for (toDoList t : pendingTasks) {
+                t.setCreatedAt(today);
+                em.merge(t); // Cập nhật vào DB
+            }
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
     }
 
 
