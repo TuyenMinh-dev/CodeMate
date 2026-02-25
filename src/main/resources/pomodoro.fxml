@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.Insets?>
+
+<StackPane fx:id="mainRoot" prefHeight="500.0" prefWidth="750.0" styleClass="main-background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="roots.controllers.PomodoroController">
+
+    <Circle mouseTransparent="true" radius="180.0" styleClass="glow-circle" />
+
+    <VBox alignment="CENTER" spacing="25.0" styleClass="card-panel" maxWidth="580" maxHeight="420">
+        <padding><Insets top="40" bottom="40" left="40" right="40"/></padding>
+
+        <Label styleClass="title-label" text="P O M O D O R O" />
+        <Label fx:id="statusLabel" styleClass="status-label" text="Tập trung để hoàn thành mục tiêu" />
+
+        <Label fx:id="timeLabel" styleClass="timer-display" text="25:00" />
+
+        <HBox fx:id="configBox" alignment="CENTER" spacing="15">
+            <Label text="Thời gian làm việc:" style="-fx-text-fill: #94a3b8;"/>
+            <ChoiceBox fx:id="durationChoice" prefWidth="90.0" style="-fx-background-radius: 10;"/>
+        </HBox>
+
+        <HBox fx:id="buttonContainer" alignment="CENTER" spacing="20.0">
+            <children>
+                <Button fx:id="btnStart" onAction="#handleStart" styleClass="btn, btn-primary" text="BẮT ĐẦU" />
+
+                <Button fx:id="btnBreak" managed="false" visible="false" onAction="#handleBreak" styleClass="btn, btn-success" text="NGHỈ NGƠI" />
+                <Button fx:id="btnSkip" managed="false" visible="false" onAction="#handleSkip" styleClass="btn, btn-warning" text="BỎ QUA" />
+
+            </children>
+        </HBox>
+    </VBox>
+</StackPane>
