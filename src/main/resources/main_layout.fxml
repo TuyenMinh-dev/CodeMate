@@ -1,26 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
 
-<BorderPane fx:id="mainPane" prefHeight="650.0" prefWidth="1000.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="roots.controllers.MainController">
-    <left>
-        <VBox spacing="15.0" styleClass="sidebar" prefWidth="220.0">
-            <Label text="CodeMate" styleClass="sidebar-title" />
+<StackPane fx:id="rootStack" prefHeight="650.0" prefWidth="1000.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="roots.controllers.MainController">
 
-            <Button onAction="#showPomodoro" styleClass="menu-btn" text="⏱ Pomodoro" maxWidth="Infinity" />
-            <Button onAction="#showTodoList" styleClass="menu-btn" text="✅ Todo List" maxWidth="Infinity" />
-            <Button onAction="#showStatistics" styleClass="menu-btn" text="📊 Thống kê" maxWidth="Infinity" />
+    <BorderPane fx:id="mainContainer">
+        <left>
+            <VBox spacing="15" prefWidth="230" style="-fx-background-color: #1e293b; -fx-padding: 25 15 25 15;">
+                <Label text="CodeMate" style="-fx-text-fill: #38bdf8; -fx-font-size: 26px; -fx-font-weight: bold; -fx-padding: 0 0 30 0;" />
 
+                <VBox spacing="10" VBox.vgrow="ALWAYS">
+                    <Button maxWidth="Infinity" text="📝  To Do List" onAction="#showTodoTab"
+                            style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 10;"/>
+                    <Button maxWidth="Infinity" text="⏱  Pomodoro" onAction="#showPomoTab"
+                            style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 10;"/>
+                    <Button maxWidth="Infinity" text="📊  Thống kê" onAction="#showStatTab"
+                            style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 10;"/>
+                </VBox>
 
-            <Region VBox.vgrow="ALWAYS" />
-            <Label text="Version 1.0" style="-fx-text-fill: #64748b; -fx-padding: 10;" />
+                <Separator style="-fx-opacity: 0.2;" />
+
+                <Button maxWidth="Infinity" text="KẾT THÚC NGÀY" onAction="#handleGlobalEndDay"
+                        style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 12; -fx-cursor: hand;" />
+            </VBox>
+        </left>
+
+        <center>
+            <TabPane fx:id="mainTabPane" side="TOP" tabClosingPolicy="UNAVAILABLE"
+                     style="-fx-tab-max-height: 0; -fx-tab-min-height: 0; -fx-tab-max-width: 0;">
+                <Tab fx:id="tabTodo">
+                    <fx:include fx:id="todoTabContent" source="todo.fxml" />
+                </Tab>
+                <Tab fx:id="tabPomo">
+                    <fx:include fx:id="pomoTabContent" source="pomodoro.fxml" />
+                </Tab>
+                <Tab fx:id="tabStat">
+                    <AnchorPane styleClass="main-background">
+                        <Label text="Biểu đồ thống kê sẽ hiện ở đây" textFill="WHITE" layoutX="50" layoutY="50"/>
+                    </AnchorPane>
+                </Tab>
+            </TabPane>
+        </center>
+    </BorderPane>
+
+    <VBox fx:id="welcomeOverlay" alignment="CENTER" spacing="30" style="-fx-background-color: #0f172a;">
+        <Circle radius="50" fill="#38bdf8" opacity="0.1" />
+        <VBox alignment="CENTER" spacing="10">
+            <Label text=" CHÀO BUỔI SÁNG ! " style="-fx-text-fill: white; -fx-font-size: 36px; -fx-font-weight: bold;" />
+            <Label text="Chúc bạn có một ngày làm việc thật năng suất nhé " style="-fx-text-fill: #94a3b8; -fx-font-size: 18px;" />
         </VBox>
-    </left>
-
-    <center>
-        <StackPane fx:id="contentArea" styleClass="main-background">
-            <Label text="Chào mừng bạn quay trở lại!" styleClass="title-label" />
-        </StackPane>
-    </center>
-</BorderPane>
+        <Button onAction="#handleGlobalStartDay" text="BẮT ĐẦU NGÀY MỚI"
+                style="-fx-background-color: #38bdf8; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 18 50; -fx-background-radius: 40; -fx-font-size: 20px; -fx-cursor: hand;" />
+    </VBox>
+</StackPane>

@@ -8,41 +8,43 @@
 
     <Label styleClass="title-label" text="DANH SÁCH CÔNG VIỆC" />
 
-    <HBox spacing="10">
-        <TextField fx:id="txtTitle" promptText="Thêm việc mới..." HBox.hgrow="ALWAYS"
-                   style="-fx-background-color: #1e293b; -fx-text-fill: white; -fx-border-color: #334155; -fx-padding: 10; -fx-background-radius: 8;" />
-        <Button onAction="#handleAdd" styleClass="btn-primary" text="+ THÊM" />
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="txtTitle" promptText="Nhập công việc..." HBox.hgrow="ALWAYS" />
+
+        <ComboBox fx:id="cbPomoEstimate" prefWidth="100" promptText="Số phiên" />
+
+        <TextField fx:id="txtCustomPomo" prefWidth="50" visible="false" managed="false" promptText="Số" />
+
+        <Button text="Thêm" onAction="#handleAdd" />
     </HBox>
 
     <HBox spacing="10">
         <Button onAction="#filterAll" styleClass="btn-filter" text="Tất cả" />
         <Button onAction="#filterDone" styleClass="btn-filter" text="Đã xong" />
         <Button onAction="#filterUndone" styleClass="btn-filter" text="Chưa xong" />
-        <Button text="KẾT THÚC NGÀY" onAction="#handleEndDay"
-                style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 15;"/>
+
     </HBox>
 
-    <ListView fx:id="listTodo"
-              style="-fx-background-color: transparent; -fx-control-inner-background: transparent; -fx-background-insets: 0;"
-              VBox.vgrow="ALWAYS"
-              maxHeight="300" />
+    <StackPane VBox.vgrow="ALWAYS">
+        <ListView fx:id="todoListView" VBox.vgrow="ALWAYS" />
+        <VBox fx:id="vboxCelebration" alignment="CENTER" spacing="20" visible="false">
+            <Label text="🎉" style="-fx-font-size: 50px;" />
+            <Label text="BẠN ĐÃ HOÀN THÀNH HẾT CÔNG VIỆC!"
+                   style="-fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-font-size: 18px;" />
+            <Label text="Thật là một ngày làm việc năng suất!"
+                   style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;" />
+        </VBox>
+    </StackPane>
 
-    <VBox spacing="10" style="-fx-padding: 10 0 0 0;">
-        <Label style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;" text="Tiến độ hoàn thành" />
-        <ProgressBar fx:id="progressBar"
-                     prefWidth="600.0"
-                     progress="0.0"
-                     styleClass="custom-progress"
-                     style="-fx-min-height: 15; -fx-pref-height: 15;" />
-        <Label fx:id="lblProgress" style="-fx-text-fill: white;" text="0%" />
-    </VBox>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <ProgressBar fx:id="progressBar" prefWidth="300" progress="0.0" />
+        <Label fx:id="lblProgress" text="0% (0/0)" style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;" />
+    </HBox>
 
-    <VBox fx:id="startDayBox" alignment="CENTER" spacing="20">
-        <Label text="Chào buổi sáng! Sẵn sàng cho một ngày năng suất?" style="-fx-text-fill: white; -fx-font-size: 18px;"/>
-        <Button text="BẮT ĐẦU NGÀY LÀM VIỆC" onAction="#handleStartDay"
-                style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20;"/>
-    </VBox>
 
     <VBox fx:id="mainTodoBox" visible="false" managed="false" spacing="15">
     </VBox>
+
+
 </VBox>

@@ -164,3 +164,11 @@
     -fx-background-color: #1e293b;
     -fx-background-radius: 10;
 }
+.btn-sidebar:hover {
+    -fx-background-color: #334155;
+    -fx-text-fill: #38bdf8;
+}
+
+.btn-sidebar:pressed {
+    -fx-background-color: #0f172a;
+}

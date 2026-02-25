@@ -13,14 +13,20 @@ import javafx.fxml.Initializable;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class toDoController implements Initializable {
 
     private final toDoService todoService = new toDoService();
     private final ObservableList<toDoList> allTodos = FXCollections.observableArrayList();
     private String currentFilter = "ALL";
+    private MainController mainController;
+    @FXML private ListView<toDoList> todoListView;
+
 
     @FXML
     private ProgressBar progressBar;
@@ -40,13 +46,38 @@ public class toDoController implements Initializable {
     private VBox mainTodoBox;
 
     @FXML
-    private void handleAdd() {
-        toDoList todo = todoService.addTodo(txtTitle.getText());
-        if (todo == null) return;
+    private VBox vboxCelebration;
+    @FXML
+    private Label lblFinishedMessage;
 
-        allTodos.add(todo);
-        txtTitle.clear();
-        updateProgress();
+    @FXML
+    private void handleAdd() {
+        String title = txtTitle.getText();
+        if (title.isEmpty()) return;
+
+        List<Integer> durations = new ArrayList<>();
+        if ("Khác...".equals(cbPomoEstimate.getValue())) {
+            try {
+                durations = Arrays.stream(txtCustomPomo.getText().split(","))
+                        .map(s -> Integer.parseInt(s.trim()))
+                        .collect(java.util.stream.Collectors.toList());
+            } catch (Exception e) {
+                durations = List.of(25);
+            }
+        } else {
+            int count = Integer.parseInt(cbPomoEstimate.getValue());
+            for (int i = 0; i < count; i++) durations.add(30);
+        }
+
+        // Gửi List durations đi
+        toDoList todo = todoService.addTodo(title, durations);
+
+        if (todo != null) {
+            allTodos.add(todo);
+            txtTitle.clear();
+            txtCustomPomo.clear();
+            updateProgress();
+        }
     }
 
     @FXML
@@ -67,34 +98,32 @@ public class toDoController implements Initializable {
         listTodo.setItems(allTodos.filtered(t -> !t.isCompleted()));
     }
 
+    @FXML
+    private ComboBox<String> cbPomoEstimate;
+    @FXML
+    private TextField txtCustomPomo;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        todoListView.setCellFactory(lv -> new toDoCell(todoService, () -> currentFilter, this::updateProgress, this));
+        cbPomoEstimate.setItems(FXCollections.observableArrayList("1", "2", "3", "4", "5", "Khác..."));
+        cbPomoEstimate.getSelectionModel().selectFirst();
 
-        listTodo.setCellFactory(list -> new toDoCell(todoService, () -> currentFilter, this::updateProgress));
-
-        // Đảm bảo lúc mới vào chỉ hiện startDayBox
-        mainTodoBox.setVisible(false);
-        mainTodoBox.setManaged(false);
-        startDayBox.setVisible(true);
-        startDayBox.setManaged(true);
+        cbPomoEstimate.setOnAction(e -> {
+            boolean isCustom = "Khác...".equals(cbPomoEstimate.getValue());
+            txtCustomPomo.setVisible(isCustom);
+            txtCustomPomo.setManaged(isCustom);
+        });
     }
 
-    @FXML
-    private void handleStartDay() {
-        // 1. Quét toàn bộ task chưa xong từ quá khứ và đẩy về hôm nay
-        toDoListDao.carryOverPendingTasks(LocalDate.now());
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
 
-        // 2. Chuyển đổi giao diện (Như cũ)
-        startDayBox.setVisible(false);
-        startDayBox.setManaged(false);
-        mainTodoBox.setVisible(true);
-        mainTodoBox.setManaged(true);
 
-        // 3. Load dữ liệu (Lúc này allTodos sẽ bao gồm cả việc mới của hôm nay + việc cũ vừa được đẩy sang)
+    public void loadData() {
         allTodos.clear();
         allTodos.addAll(toDoListDao.findByDate(LocalDate.now()));
-
-        // 4. Cập nhật giao diện (Như cũ)
         listTodo.setItems(allTodos);
         updateProgress();
     }
@@ -104,73 +133,103 @@ public class toDoController implements Initializable {
     private void updateProgress() {
         if (allTodos.isEmpty()) {
             progressBar.setProgress(0);
-            lblProgress.setText("0%");
+            lblProgress.setText("0% (0/0)");
+            // Hiện thông báo nếu danh sách trống hoàn toàn
+            showCelebration(false);
             return;
         }
 
-        long doneCount = allTodos.stream()
-                .filter(toDoList::isCompleted)
-                .count();
-
+        long doneCount = allTodos.stream().filter(toDoList::isCompleted).count();
         double progress = (double) doneCount / allTodos.size();
-        progressBar.setProgress(progress);
 
-        int percent = (int) (progress * 100);
-        lblProgress.setText(percent + "% (" + doneCount + "/" + allTodos.size() + ")");
+        progressBar.setProgress(progress);
+        lblProgress.setText((int) (progress * 100) + "% (" + doneCount + "/" + allTodos.size() + ")");
+
     }
+
+    private void showCelebration(boolean isFinished) {
+        if (isFinished) {
+            listTodo.setVisible(false); // Ẩn danh sách việc đi
+            vboxCelebration.setVisible(true); // Hiện màn hình pháo hoa
+            lblFinishedMessage.setText("🌟 Thật là một ngày làm việc năng suất !");
+        } else {
+            listTodo.setVisible(true);
+            vboxCelebration.setVisible(false);
+        }
+    }
+
     @FXML
-    private void handleEndDay() {
+    public void handleEndDay() {
         long totalTasks = allTodos.size();
+        if (totalTasks == 0) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Thông báo");
+            alert.setHeaderText(null);
+            alert.setContentText("Hôm nay m chưa thêm việc gì mà đã đòi kết thúc rồi à? Chiến đi chứ!");
+            alert.showAndWait();
+            return;
+        }
+
         List<toDoList> pendingTasks = allTodos.stream()
                 .filter(t -> !t.isCompleted())
                 .toList();
         long completedCount = totalTasks - pendingTasks.size();
+        int percent = (int) ((double) completedCount / totalTasks * 100);
 
-        double completionRate = (totalTasks == 0) ? 0 : (double) completedCount / totalTasks;
-        int percent = (int) (completionRate * 100);
+        // TRƯỜNG HỢP 1: HOÀN THÀNH 100%
+        if (pendingTasks.isEmpty()) {
+            showCelebration(true);
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION); // Dùng INFORMATION để chỉ có nút OK
+            alert.setTitle("Hoàn thành xuất sắc!");
+            alert.setHeaderText("Hôm nay m đã hoàn thành 100% công việc!");
+            alert.setContentText("Tuyệt vời! Một ngày làm việc cực kỳ năng suất. Nghỉ ngơi thôi Tuyên ơi!");
+
+            alert.showAndWait();
 
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Tổng kết ngày làm việc");
-
-
-        alert.setHeaderText("Hôm nay bạn đã hoàn thành " + percent + "% công việc.");
-
-        if (pendingTasks.isEmpty() && totalTasks > 0) {
-            alert.setContentText("Tuyệt vời! Bạn đã dọn dẹp sạch sẽ danh sách việc cần làm.");
-        } else if (totalTasks == 0) {
-            alert.setContentText("Hôm nay bạn chưa có công việc nào để tổng kết.");
-        } else {
-            alert.setContentText("Bạn vẫn còn " + pendingTasks.size() + " việc chưa xong. Bạn muốn làm gì?");
         }
+        // TRƯỜNG HỢP 2: VẪN CÒN VIỆC (DƯỚI 100%)
+        else {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Tổng kết ngày làm việc");
+            alert.setHeaderText("Hôm nay bạn mới hoàn thành " + percent + "% công việc.");
+            alert.setContentText("Bạn vẫn còn " + pendingTasks.size() + " việc chưa xong. M tính sao?");
 
-        ButtonType btnTomorrow = new ButtonType("Chuyển sang mai");
-        ButtonType btnKeep = new ButtonType("Để lại hôm nay");
-        ButtonType btnCancel = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType btnTomorrow = new ButtonType("Chuyển sang mai");
+            ButtonType btnKeep = new ButtonType("Để lại hôm nay");
+            ButtonType btnCancel = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        alert.getButtonTypes().setAll(btnTomorrow, btnKeep, btnCancel);
+            alert.getButtonTypes().setAll(btnTomorrow, btnKeep, btnCancel);
 
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == btnTomorrow) {
-                for (toDoList t : pendingTasks) {
-                    t.setCreatedAt(LocalDate.now().plusDays(1));
-                    todoService.update(t);
+            alert.showAndWait().ifPresent(response -> {
+                if (response == btnTomorrow) {
+                    for (toDoList t : pendingTasks) {
+                        t.setCreatedAt(LocalDate.now().plusDays(1));
+                        todoService.update(t);
+                    }
+                    allTodos.removeAll(pendingTasks);
+                    updateProgress();
+                    showMotivationAlert();
                 }
-                allTodos.removeAll(pendingTasks);
-                updateProgress();
-
-                showMotivationAlert();
-            }
-        });
+            });
+        }
     }
 
-    // Hàm hiện thông báo khích lệ so sánh với hôm qua
     private void showMotivationAlert() {
         Alert motivation = new Alert(Alert.AlertType.INFORMATION);
         motivation.setTitle("CodeMate Coach");
         motivation.setHeaderText("🚀 Lời nhắn nhủ");
         motivation.setContentText("Hệ thống ghi nhận bạn đã rất nỗ lực. Hãy nghỉ ngơi và sẵn sàng cho ngày mai nhé!");
         motivation.show();
+    }
+
+    public void onStartSession(toDoList task, Integer duration) {
+        if (this.mainController != null) {
+            this.mainController.showPomoTab();
+            if (this.mainController.getPomoTabContentController() != null) {
+                this.mainController.getPomoTabContentController().setTimer(task, duration);
+            }
+        }
     }
 }

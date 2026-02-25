@@ -1,42 +1,78 @@
 package roots.controllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.layout.StackPane;
-import java.io.IOException;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import roots.dao.toDoListDao;
+import java.time.LocalDate;
 
 public class MainController {
-    @FXML private StackPane contentArea;
+    @FXML private StackPane rootStack;
+    @FXML private VBox welcomeOverlay;
+    @FXML private BorderPane mainContainer;
+    @FXML private TabPane mainTabPane;
 
-    // Hàm dùng chung để thay đổi màn hình
-    private void setPage(String fxmlPath) {
-        try {
-            // Load file FXML mới
-            Node node = FXMLLoader.load(getClass().getResource(fxmlPath));
-            // Xóa màn hình cũ, thêm màn hình mới vào
-            contentArea.getChildren().setAll(node);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML public void showPomodoro() { setPage("/pomodoro.fxml"); }
+    // Inject các Controller con từ FXML (Lưu ý: fx:id trong FXML phải khớp với tên biến + "Controller")
+    @FXML private toDoController todoTabContentController;
+    @FXML private PomodoroController pomoTabContentController;
 
     @FXML
-    public void showTodoList() {
-        try {
-            // Đảm bảo tên file "/todo.fxml" viết đúng như tên bạn lưu trong resources
-            Node node = FXMLLoader.load(getClass().getResource("/todo.fxml"));
-            contentArea.getChildren().setAll(node);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Lỗi: Không tìm thấy file todo.fxml hoặc lỗi trong Controller!");
+    public void initialize() {
+        mainContainer.setVisible(false);
+        welcomeOverlay.setVisible(true);
+
+        // QUAN TRỌNG: Kết nối MainController với toDoController để nút Play hoạt động
+        if (todoTabContentController != null) {
+            todoTabContentController.setMainController(this);
         }
     }
 
-    @FXML public void showStatistics() {
-        // Có thể mở cửa sổ mới như cũ hoặc nhúng vào Dashboard tùy bạn
-        setPage("/statistics.fxml");
+    // Hàm này để fix lỗi "Cannot resolve method" ở toDoController của m
+    public PomodoroController getPomoTabContentController() {
+        return pomoTabContentController;
+    }
+
+    @FXML
+    private void handleGlobalStartDay() {
+        toDoListDao.carryOverPendingTasks(LocalDate.now());
+        welcomeOverlay.setVisible(false);
+        mainContainer.setVisible(true);
+
+        if (todoTabContentController != null) {
+            todoTabContentController.loadData();
+        }
+        if (pomoTabContentController != null) {
+            pomoTabContentController.refreshTaskList();
+        }
+    }
+
+    @FXML
+    private void handleGlobalEndDay() {
+        if (todoTabContentController != null) {
+            todoTabContentController.handleEndDay();
+        }
+    }
+
+    public void backToWelcome() {
+        mainContainer.setVisible(false);
+        welcomeOverlay.setVisible(true);
+    }
+
+    @FXML
+    void showTodoTab() {
+        mainTabPane.getSelectionModel().select(0);
+    }
+
+    @FXML
+    void showPomoTab() {
+        mainTabPane.getSelectionModel().select(1);
+        if (pomoTabContentController != null) {
+            pomoTabContentController.refreshTaskList();
+        }
+    }
+
+    @FXML
+    void showStatTab() {
+        mainTabPane.getSelectionModel().select(2);
     }
 }
