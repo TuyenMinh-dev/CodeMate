@@ -21,13 +21,13 @@ public class MainController {
         }
     }
 
-    @FXML public void showPomodoro() { setPage("/pomodoro.fxml"); }
+    @FXML public void showPomodoro() { setPage("/view/pomodoro.fxml"); }
 
     @FXML
     public void showTodoList() {
         try {
             // Đảm bảo tên file "/todo.fxml" viết đúng như tên bạn lưu trong resources
-            Node node = FXMLLoader.load(getClass().getResource("/todo.fxml"));
+            Node node = FXMLLoader.load(getClass().getResource("/view/todo.fxml"));
             contentArea.getChildren().setAll(node);
         } catch (IOException e) {
             e.printStackTrace();
@@ -37,6 +37,6 @@ public class MainController {
 
     @FXML public void showStatistics() {
         // Có thể mở cửa sổ mới như cũ hoặc nhúng vào Dashboard tùy bạn
-        setPage("/statistics.fxml");
+        setPage("/view/statistics.fxml");
     }
 }

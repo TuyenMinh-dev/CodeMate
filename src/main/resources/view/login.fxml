@@ -15,14 +15,14 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="roots.controllers.LoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="roots.controllers.LoginController">
    <children>
-      <ImageView fx:id="bgLogin" fitHeight="640.0" fitWidth="360.0" pickOnBounds="true">
+      <ImageView fx:id="bgLogin" fitHeight="600.0" fitWidth="900.0" pickOnBounds="true">
          <image>
             <Image url="@../assets/images/backgrounds/bgLogin.png" />
          </image>
       </ImageView>
-      <AnchorPane fx:id="formLgin" layoutX="45.0" layoutY="117.0" prefHeight="406.0" prefWidth="270.0" style="-fx-background-color: rgba(0,-30,10,0.5); -fx-border-radius: 10; -fx-border-color: white; -fx-border-width: 2;">
+      <AnchorPane fx:id="formLgin" layoutX="315.0" layoutY="97.0" prefHeight="406.0" prefWidth="270.0" style="-fx-background-color: rgba(0,-30,10,0.5); -fx-border-radius: 10; -fx-border-color: white; -fx-border-width: 2;">
          <opaqueInsets>
             <Insets />
          </opaqueInsets>
@@ -40,7 +40,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="6.0" prefHeight="640.0" prefWidth="360.0">
+      <AnchorPane layoutX="278.0" layoutY="-20.0" prefHeight="640.0" prefWidth="360.0">
          <children>
             <Label layoutX="114.0" layoutY="161.0" text="CODEMATE" textFill="#ebe5e5" textOverrun="CLIP">
                <font>
@@ -91,7 +91,8 @@
                   <ImageView fx:id="iconEYE" fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../assets/images/icon/closeEye.png" />
-                     </image></ImageView>
+                     </image>
+                  </ImageView>
                </graphic>
                <cursor>
                   <Cursor fx:constant="HAND" />

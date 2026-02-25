@@ -3,12 +3,14 @@ package roots.controllers;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.AudioClip;
 import roots.entity.PomodoroState;
 import roots.services.PomodoroTimer;
 import roots.services.StatService;
+import roots.utils.ChangeFXML;
 
 public class PomodoroController {
 
@@ -35,6 +37,11 @@ public class PomodoroController {
         timer.onStateChange(this::onStateChange);
         timer.onFinish(this::onFinish);
     }
+    @FXML
+    public void comeBackPomodoro(MouseEvent event){
+        ChangeFXML.changeFXML(event, "/view/home.fxml");
+    }
+
 
     @FXML
     public void initialize() {
@@ -214,7 +221,7 @@ public class PomodoroController {
     @FXML
     public void showStatistics() {
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/statistics.fxml"));
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/view/statistics.fxml"));
             javafx.scene.Parent root = loader.load();
 
             javafx.stage.Stage stage = new javafx.stage.Stage();

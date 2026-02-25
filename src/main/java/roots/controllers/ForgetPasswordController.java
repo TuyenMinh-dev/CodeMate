@@ -21,17 +21,22 @@ public class ForgetPasswordController {
     @FXML private Label errorPassword;
     @FXML private Label errorCheckPassword;
 
+    private final EmailService emailService = new EmailService();
+    private static String inputEmail;
     @FXML
     public void sendOTPFG(ActionEvent event){
         errorEmail.setText("");
         String email = emailFG.getText();
-        if (email == null){
+        if (email == null || email.trim().isEmpty() ){
             errorEmail.setText("Email không được để trống!");
             return;
         }
         else{
-            EmailService emailService = new EmailService();
-            emailService.emailSend(email);
+            inputEmail = emailFG.getText();
+            new Thread(() -> {
+                emailService.emailSend(inputEmail);
+            }).start();
+
         }
 
     }
@@ -40,12 +45,11 @@ public class ForgetPasswordController {
     public void checkOTPFG(ActionEvent event){
         errorOTP.setText("");
         String otp = OTPFG.getText();
-        if(otp == null){
+        if(otp == null || otp.trim().isEmpty()){
             errorOTP.setText("Mã OTP không được để trống!");
             return;
         }
         else {
-            EmailService emailService = new EmailService();
             if(emailService.checkOTP(otp)){
                 ChangeFXML.changeFXML(event, "/view/newPassword.fxml");
             }
@@ -82,9 +86,8 @@ public class ForgetPasswordController {
             return;
         }
         else{
-            String email = emailFG.getText();
             AuthServiceImpl authService = new AuthServiceImpl();
-            authService.forgetPassword(email, newPass);
+            authService.forgetPassword(inputEmail, newPass);
             ChangeFXML.changeFXML(event, "/view/login.fxml");
         }
 

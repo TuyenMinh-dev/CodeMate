@@ -3,9 +3,12 @@ package roots.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import roots.entity.DailyStats;
 import roots.services.StatService;
+import roots.utils.ChangeFXML;
+
 import java.util.Map;
 
 public class StatController {
@@ -29,6 +32,11 @@ public class StatController {
                 });
 
         barChart.getData().add(series);
+    }
+
+    @FXML
+    public void comeBackProduct(MouseEvent event){
+        ChangeFXML.changeFXML(event, "/view/home.fxml");
     }
 
     @FXML
