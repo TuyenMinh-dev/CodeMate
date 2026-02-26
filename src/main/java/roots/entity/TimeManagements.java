@@ -1,8 +1,9 @@
-package roots.models;
+package roots.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import roots.models.User;
 
 import java.time.LocalDateTime;
 
@@ -31,14 +32,20 @@ public class TimeManagements {
     @Column(name = "duration_seconds")
     private long duration_seconds; //tổng seconds giữa start_time và end_time
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "pomodoro_state", nullable = false)
+    private PomodoroState state;
+
     public TimeManagements() {
     }
 
-    public TimeManagements(User user, String task_name, LocalDateTime start_time, LocalDateTime end_time) {
+    public TimeManagements(User user, String task_name, LocalDateTime start_time, LocalDateTime end_time, PomodoroState state) {
         this.user = user;
         this.task_name = task_name;
         this.start_time = start_time;
         this.end_time = end_time;
+        this.state = state;
+
         if(start_time != null && end_time != null){
             this.duration_seconds = java.time.Duration.between(start_time,end_time).getSeconds();
         }

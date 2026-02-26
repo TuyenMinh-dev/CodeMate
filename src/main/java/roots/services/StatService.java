@@ -1,44 +1,68 @@
 package roots.services;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import roots.entity.DailyStats;
+import roots.entity.TimeManagements;
+import roots.models.UserSession;
+import roots.utils.DBConnection;
+
 import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class StatService {
 
     // Hàm này dùng để lưu 1 phiên làm việc vừa xong vào lịch sử
-    public void saveSession(int seconds) {
-        Map<String, DailyStats> allStats = loadAllStats(); // 1. Đọc dữ liệu cũ lên trước
-        String today = LocalDate.now().toString(); // Lấy ngày hôm nay
+    public void saveSession(long seconds) {
+        EntityManager em = DBConnection.getEntityManager();
+        EntityTransaction entityTransaction = em.getTransaction();
 
-        if (allStats.containsKey(today)) {
-            // Nếu hôm nay đã có trong danh sách rồi -> Cộng thêm giây vào
-            allStats.get(today).addSeconds(seconds);
-        } else {
-            // Nếu hôm nay là ngày mới -> Tạo mới dòng dữ liệu cho ngày hôm nay
-            allStats.put(today, new DailyStats(today, seconds));
-        }
-        saveToFile(allStats); // 2. Ghi đè lại file đã cập nhật
-    }
+        try{
+            entityTransaction.begin();
+            TimeManagements time = new TimeManagements();
+            time.setUser(UserSession.getCurrentUser());
+            time.setStart_time(LocalDateTime.now());
+            time.setDuration_seconds(seconds);
 
-    // Hàm đọc toàn bộ lịch sử từ file lên bộ nhớ (RAM)
-    public Map<String, DailyStats> loadAllStats() {
-        File file = new File(FILE_PATH);
-        if (!file.exists()) return new HashMap<>(); // Nếu chưa có file thì trả về danh sách rỗng
-
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            return (Map<String, DailyStats>) ois.readObject();
+            //lưu các giá trị na vào database trong sql
+            em.persist(time);
+            entityTransaction.commit();
         } catch (Exception e) {
-            return new HashMap<>();
+            if(entityTransaction.isActive()){
+                entityTransaction.rollback();
+            }
+            e.printStackTrace();
+        }finally {
+            em.close();
         }
+    }
+    // Hàm đọc toàn bộ lịch sử từ sql
+    public Map<String, Long> getStatByUserId(long userId){
+        EntityManager em = DBConnection.getEntityManager();
+        Map<String,Long> map = new HashMap<>();
+
+        try{
+            String jpql = "select function('date',t.start_time),sum(t.duration_seconds) "
+                    + "from TimeManagements t " +
+                    "where t.user.id = :uid " +
+                    "group by function('date', t.start_time)";
+            List<Object[]> results = em.createQuery(jpql)
+                                    .setParameter("uid", userId)
+                                    .getResultList();
+
+            for(Object[] re : results){
+                map.put(re[0].toString(), ((Number)re[1]).longValue());
+
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }finally {
+            em.close();
+        }
+        return map;
     }
 
-    private void saveToFile(Map<String, DailyStats> stats) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
-            oos.writeObject(stats);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

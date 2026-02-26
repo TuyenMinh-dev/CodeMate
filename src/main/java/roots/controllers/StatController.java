@@ -6,6 +6,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import roots.entity.DailyStats;
+import roots.models.UserSession;
 import roots.services.StatService;
 import roots.utils.ChangeFXML;
 
@@ -20,18 +21,20 @@ public class StatController {
     public void initialize() {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
-        // Chỉ lấy dữ liệu thật từ file .dat của bạn
-        Map<String, DailyStats> allData = statService.loadAllStats();
+        //xem người dùng nào đang đăng nhập
+        if(UserSession.getCurrentUser() != null){
+            long currentUser = UserSession.getCurrentUser().getId();
+            Map<String, Long> dataUser = statService.getStatByUserId(currentUser);
+            //dữ liệu cho vào biểu đồ
+            dataUser.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                    .forEach(entry -> {
+                        double minutes = entry.getValue() / 60.0;
+                        series.getData().add(new XYChart.Data<>(entry.getKey(), minutes));
 
-        // Sắp xếp theo ngày để biểu đồ hiện từ trái qua phải cho đúng thứ tự thời gian
-        allData.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .forEach(entry -> {
-                    double minutes = entry.getValue().getTotalWorkSeconds() / 60.0;
-                    series.getData().add(new XYChart.Data<>(entry.getKey(), minutes));
-                });
+                    });
+            barChart.getData().add(series);
+        }
 
-        barChart.getData().add(series);
     }
 
     @FXML
