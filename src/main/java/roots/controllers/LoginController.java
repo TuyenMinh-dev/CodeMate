@@ -17,6 +17,7 @@ import roots.constrant.Message;
 import roots.constrant.Success;
 import roots.dao.LoginDAO;
 import roots.models.User;
+import roots.models.UserSession;
 import roots.services.impl.AuthServiceImpl;
 import roots.utils.AlertUtils;
 import roots.utils.ChangeFXML;
@@ -68,6 +69,7 @@ public class LoginController {
 
             User user = authService.login(name, pass);
             if(user != null){
+                UserSession.login(user);
                 ChangeFXML.changeFXML(event, "/view/home.fxml");
             }
             else {

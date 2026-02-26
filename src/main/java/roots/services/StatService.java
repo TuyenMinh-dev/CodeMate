@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class StatService {
-    private static final String FILE_PATH = "pomodoro_stats.dat"; // File này sẽ tự sinh ra trong thư mục dự án
 
     // Hàm này dùng để lưu 1 phiên làm việc vừa xong vào lịch sử
     public void saveSession(int seconds) {
