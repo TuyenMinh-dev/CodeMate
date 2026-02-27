@@ -1,15 +1,15 @@
 package roots.dao;
 import java.time.LocalDate;
 import java.util.List;
-import roots.entity.toDoList;
+import roots.entity.ToDoList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-public class toDoListDao {
+public class ToDoListDAO {
     private static EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("CodeMatePU");
 
-    public static void save(toDoList todo) {
+    public static void save(ToDoList todo) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -22,13 +22,13 @@ public class toDoListDao {
             em.close();
         }
     }
-    public static void delete(toDoList todo) {
+    public static void delete(ToDoList todo) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
 
             // bắt buộc phải attach object vào persistence context
-            toDoList managedTodo = em.find(toDoList.class, todo.getId());
+            ToDoList managedTodo = em.find(ToDoList.class, todo.getId());
 
             if (managedTodo != null) {
                 em.remove(managedTodo);
@@ -42,7 +42,7 @@ public class toDoListDao {
             em.close();
         }
     }
-    public static void update(toDoList todo) {
+    public static void update(ToDoList todo) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -57,18 +57,18 @@ public class toDoListDao {
     }
 
 
-    public static List<toDoList> findAll() {
+    public static List<ToDoList> findAll() {
         EntityManager em = emf.createEntityManager();
-        List<toDoList> list = em
-                .createQuery("FROM toDoList", toDoList.class)
+        List<ToDoList> list = em
+                .createQuery("FROM ToDoList", ToDoList.class)
                 .getResultList();
         em.close();
         return list;
     }
-    public static List<toDoList> findByDate(LocalDate date) {
+    public static List<ToDoList> findByDate(LocalDate date) {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.createQuery("FROM toDoList WHERE createdAt = :date", toDoList.class)
+            return em.createQuery("FROM ToDoList WHERE createdAt = :date", ToDoList.class)
                     .setParameter("date", date)
                     .getResultList();
         } finally {
@@ -79,11 +79,11 @@ public class toDoListDao {
     public static double getCompletionRate(LocalDate date) {
         EntityManager em = emf.createEntityManager();
         try {
-            List<toDoList> tasks = em.createQuery("FROM toDoList WHERE createdAt = :date", toDoList.class)
+            List<ToDoList> tasks = em.createQuery("FROM ToDoList WHERE createdAt = :date", ToDoList.class)
                     .setParameter("date", date)
                     .getResultList();
             if (tasks.isEmpty()) return 0.0;
-            return (double) tasks.stream().filter(toDoList::isCompleted).count() / tasks.size();
+            return (double) tasks.stream().filter(ToDoList::isCompleted).count() / tasks.size();
         } finally {
             em.close();
         }
@@ -94,13 +94,13 @@ public class toDoListDao {
             em.getTransaction().begin();
 
             // Tìm những task chưa xong của những ngày trước
-            List<toDoList> pendingTasks = em.createQuery(
-                            "FROM toDoList WHERE completed = false AND createdAt < :today", toDoList.class)
+            List<ToDoList> pendingTasks = em.createQuery(
+                            "FROM ToDoList WHERE completed = false AND createdAt < :today", ToDoList.class)
                     .setParameter("today", today)
                     .getResultList();
 
             // Đổi ngày của chúng thành hôm nay
-            for (toDoList t : pendingTasks) {
+            for (ToDoList t : pendingTasks) {
                 t.setCreatedAt(today);
                 em.merge(t); // Cập nhật vào DB
             }

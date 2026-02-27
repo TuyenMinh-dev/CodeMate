@@ -3,6 +3,7 @@ package roots.services;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import roots.entity.DailyStats;
+import roots.entity.PomodoroState;
 import roots.entity.TimeManagements;
 import roots.models.UserSession;
 import roots.utils.DBConnection;
@@ -25,6 +26,7 @@ public class StatService {
             time.setUser(UserSession.getCurrentUser());
             time.setStart_time(LocalDateTime.now());
             time.setDuration_seconds(seconds);
+            time.setState(PomodoroState.WORK);
 
             //lưu các giá trị na vào database trong sql
             em.persist(time);

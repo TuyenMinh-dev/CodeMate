@@ -5,7 +5,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "todo_list")
 
-public class toDoList {
+public class ToDoList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
@@ -21,11 +21,11 @@ public class toDoList {
     private LocalDate createdAt;
 
     // Constructor rỗng – BẮT BUỘC cho Hibernate
-    public toDoList() {
+    public ToDoList() {
         this.createdAt = LocalDate.now();
     }
 
-    public toDoList(String title) {
+    public ToDoList(String title) {
         this.title = title;
         this.completed = false;
         this.createdAt = LocalDate.now(); // Gán ngày hiện tại khi tạo mới

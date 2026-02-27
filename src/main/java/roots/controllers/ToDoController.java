@@ -3,11 +3,11 @@ package roots.controllers;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import roots.dao.toDoListDao;
-import roots.entity.toDoList;
-import roots.services.toDoService;
+import roots.dao.ToDoListDAO;
+import roots.entity.ToDoList;
+import roots.services.ToDoService;
 import roots.utils.ChangeFXML;
-import roots.view.toDoCell;
+import roots.view.ToDoCell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,10 +18,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class toDoController implements Initializable {
+public class ToDoController implements Initializable {
 
-    private final toDoService todoService = new toDoService();
-    private final ObservableList<toDoList> allTodos = FXCollections.observableArrayList();
+    private final ToDoService todoService = new ToDoService();
+    private final ObservableList<ToDoList> allTodos = FXCollections.observableArrayList();
     private String currentFilter = "ALL";
 
     @FXML
@@ -34,7 +34,7 @@ public class toDoController implements Initializable {
     private TextField txtTitle;
 
     @FXML
-    private ListView<toDoList> listTodo;
+    private ListView<ToDoList> listTodo;
 
     @FXML
     private VBox startDayBox;
@@ -48,7 +48,7 @@ public class toDoController implements Initializable {
 
     @FXML
     private void handleAdd() {
-        toDoList todo = todoService.addTodo(txtTitle.getText());
+        ToDoList todo = ToDoService.addTodo(txtTitle.getText());
         if (todo == null) return;
 
         allTodos.add(todo);
@@ -65,7 +65,7 @@ public class toDoController implements Initializable {
     @FXML
     private void filterDone() {
         currentFilter = "DONE";
-        listTodo.setItems(allTodos.filtered(toDoList::isCompleted));
+        listTodo.setItems(allTodos.filtered(ToDoList::isCompleted));
     }
 
     @FXML
@@ -77,7 +77,7 @@ public class toDoController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        listTodo.setCellFactory(list -> new toDoCell(todoService, () -> currentFilter, this::updateProgress));
+        listTodo.setCellFactory(list -> new ToDoCell(todoService, () -> currentFilter, this::updateProgress));
 
         // Đảm bảo lúc mới vào chỉ hiện startDayBox
         mainTodoBox.setVisible(false);
@@ -89,7 +89,7 @@ public class toDoController implements Initializable {
     @FXML
     private void handleStartDay() {
         // 1. Quét toàn bộ task chưa xong từ quá khứ và đẩy về hôm nay
-        toDoListDao.carryOverPendingTasks(LocalDate.now());
+        ToDoListDAO.carryOverPendingTasks(LocalDate.now());
 
         // 2. Chuyển đổi giao diện (Như cũ)
         startDayBox.setVisible(false);
@@ -99,7 +99,7 @@ public class toDoController implements Initializable {
 
         // 3. Load dữ liệu (Lúc này allTodos sẽ bao gồm cả việc mới của hôm nay + việc cũ vừa được đẩy sang)
         allTodos.clear();
-        allTodos.addAll(toDoListDao.findByDate(LocalDate.now()));
+        allTodos.addAll(ToDoListDAO.findByDate(LocalDate.now()));
 
         // 4. Cập nhật giao diện (Như cũ)
         listTodo.setItems(allTodos);
@@ -116,7 +116,7 @@ public class toDoController implements Initializable {
         }
 
         long doneCount = allTodos.stream()
-                .filter(toDoList::isCompleted)
+                .filter(ToDoList::isCompleted)
                 .count();
 
         double progress = (double) doneCount / allTodos.size();
@@ -128,7 +128,7 @@ public class toDoController implements Initializable {
     @FXML
     private void handleEndDay() {
         long totalTasks = allTodos.size();
-        List<toDoList> pendingTasks = allTodos.stream()
+        List<ToDoList> pendingTasks = allTodos.stream()
                 .filter(t -> !t.isCompleted())
                 .toList();
         long completedCount = totalTasks - pendingTasks.size();
@@ -160,7 +160,7 @@ public class toDoController implements Initializable {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == btnTomorrow) {
-                for (toDoList t : pendingTasks) {
+                for (ToDoList t : pendingTasks) {
                     t.setCreatedAt(LocalDate.now().plusDays(1));
                     todoService.update(t);
                 }

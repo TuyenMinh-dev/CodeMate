@@ -4,22 +4,22 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.SVGPath;
-import roots.entity.toDoList;
-import roots.services.toDoService;
+import roots.entity.ToDoList;
+import roots.services.ToDoService;
 import java.util.function.Supplier;
 
-public class toDoCell extends ListCell<toDoList> {
+public class ToDoCell extends ListCell<ToDoList> {
     private final CheckBox checkBox = new CheckBox();
     private final Label lblTitle = new Label();
     private final TextField txtEdit = new TextField();
     private final Button btnEdit = createIconButton("M3 17.25V21h3.75L17.81 9.94l-3.75-3.75z");
     private final Button btnDelete = createIconButton("M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z");
     private final HBox container = new HBox(12);
-    private final toDoService todoService;
+    private final ToDoService todoService;
     private final Supplier<String> currentFilter;
     private final Runnable onDataChanged;
 
-    public toDoCell(toDoService todoService, Supplier<String> currentFilter, Runnable onDataChanged) {
+    public ToDoCell(ToDoService todoService, Supplier<String> currentFilter, Runnable onDataChanged) {
         this.todoService = todoService;
         this.currentFilter = currentFilter;
         this.onDataChanged = onDataChanged;
@@ -73,7 +73,7 @@ public class toDoCell extends ListCell<toDoList> {
     }
 
     @Override
-    protected void updateItem(toDoList item, boolean empty) {
+    protected void updateItem(ToDoList item, boolean empty) {
         super.updateItem(item, empty);
         if (empty || item == null) { setGraphic(null); setStyle("-fx-background-color: transparent;"); }
         else {

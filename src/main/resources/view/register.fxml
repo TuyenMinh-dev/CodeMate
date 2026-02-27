@@ -13,14 +13,14 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="roots.controllers.RegisterController">
    <children>
-      <ImageView fitHeight="600.0" fitWidth="900.0" pickOnBounds="true">
+      <ImageView fitHeight="600.0" fitWidth="900.0" layoutY="7.0" pickOnBounds="true">
          <image>
             <Image url="@../assets/images/backgrounds/bgRegister.jpg" />
          </image>
       </ImageView>
-      <AnchorPane layoutX="263.0" prefHeight="640.0" prefWidth="360.0">
+      <AnchorPane layoutX="263.0" prefHeight="640.0" prefWidth="400.0">
          <children>
-            <AnchorPane layoutX="37.0" layoutY="35.0" prefHeight="555.0" prefWidth="286.0" style="-fx-background-color: rgba(10,0,10,0.1); -fx-border-radius: 15; -fx-background-radius: 15;">
+            <AnchorPane layoutX="49.0" layoutY="43.0" prefHeight="555.0" prefWidth="286.0" style="-fx-background-color: rgba(10,0,10,0.1); -fx-border-radius: 15; -fx-background-radius: 15;">
                <children>
                   <Button fx:id="registerRGS" layoutX="62.0" layoutY="487.0" mnemonicParsing="false" onAction="#registerRGS" prefHeight="38.0" prefWidth="163.0" style="-fx-background-color: #1E8E04; -fx-background-radius: 12; -fx-border-radius: 12;" text="Đăng ký" textFill="WHITE">
                      <font>
@@ -67,7 +67,7 @@
                   </Label>
                   <Label layoutX="51.0" layoutY="14.0" prefHeight="53.0" prefWidth="185.0" text="  Tạo tài khoản" textAlignment="JUSTIFY" textFill="WHITE" textOverrun="CLIP">
                      <font>
-                        <Font name="System Bold" size="26.0" />
+                        <Font name="Cambria" size="29.0" />
                      </font>
                   </Label>
                   <Button fx:id="loginRGS" layoutX="150.0" layoutY="458.0" mnemonicParsing="false" onAction="#loginRGS" style="-fx-background-color: transperant;" text="Đăng nhập ngay" textFill="#a6ff00">
