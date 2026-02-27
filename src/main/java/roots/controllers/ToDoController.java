@@ -48,8 +48,14 @@ public class ToDoController implements Initializable {
 
     @FXML
     private void handleAdd() {
-        ToDoList todo = ToDoService.addTodo(txtTitle.getText());
-        if (todo == null) return;
+        String title = txtTitle.getText();
+        if (title == null || title.isEmpty()) return;
+        ToDoList todo = todoService.addTodo(title);
+        if (todo == null) {
+            todo = new ToDoList();
+            todo.setTitle(title);
+            todo.setCompleted(false);
+        }
 
         allTodos.add(todo);
         txtTitle.clear();
@@ -78,12 +84,9 @@ public class ToDoController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         listTodo.setCellFactory(list -> new ToDoCell(todoService, () -> currentFilter, this::updateProgress));
-
-        // Đảm bảo lúc mới vào chỉ hiện startDayBox
-        mainTodoBox.setVisible(false);
-        mainTodoBox.setManaged(false);
-        startDayBox.setVisible(true);
-        startDayBox.setManaged(true);
+        allTodos.clear();
+        allTodos.addAll(ToDoListDAO.findByDate(LocalDate.now()));
+        listTodo.setItems(allTodos);
     }
 
     @FXML

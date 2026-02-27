@@ -22,8 +22,8 @@ public class PomodoroController {
     @FXML private StackPane mainRoot;
     @FXML private Button btnStat;
 
-    private PomodoroState state = PomodoroState.IDLE;
-    private final PomodoroTimer timer = new PomodoroTimer();
+    private PomodoroState state;
+    private final PomodoroTimer timer = PomodoroTimer.getInstance();
     private final StatService statService = new StatService();
 
     private int workMinutes = 30;
@@ -45,9 +45,24 @@ public class PomodoroController {
 
     @FXML
     public void initialize() {
+        // 1. Đăng ký lại các callback để UI cập nhật đúng
+        timer.onTick(this::onTick);
+        timer.onStateChange(this::onStateChange);
+        timer.onFinish(this::onFinish);
+
+        // 2. Setup ChoiceBox
         durationChoice.getItems().addAll(25, 30, 35);
         durationChoice.setValue(30);
-        updateTimeLabel(durationChoice.getValue() * 60);
+
+        // 3. QUAN TRỌNG: Kiểm tra xem Timer có đang chạy dở không
+        this.state = timer.getCurrentState(); // Giả sử m có hàm lấy state từ Timer
+        if (state != PomodoroState.IDLE) {
+            // Nếu đang chạy dở, cập nhật Label theo số giây còn lại của Timer
+            updateTimeLabel(timer.getSecondsLeft());
+            onStateChange(state); // Cập nhật lại màu sắc giao diện (Work/Rest)
+        } else {
+            updateTimeLabel(durationChoice.getValue() * 60);
+        }
 
         durationChoice.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (state == PomodoroState.IDLE && newVal != null) {
@@ -58,11 +73,12 @@ public class PomodoroController {
 
     @FXML
     public void handleStart() {
+        // Cập nhật lại state cục bộ trước khi check
+        this.state = timer.getCurrentState();
         if (state == PomodoroState.IDLE) {
             workMinutes = durationChoice.getValue();
-            timer.startWork(10);
+            timer.startWork(workMinutes * 60); // Sửa từ 10 thành workMinutes
         } else {
-
             stopAll();
         }
     }
@@ -88,9 +104,10 @@ public class PomodoroController {
     private void onTick(int secondsLeft) {
         Platform.runLater(() -> {
             updateTimeLabel(secondsLeft);
+            // Đồng bộ state để UI biết đường mà vẽ
+            this.state = timer.getCurrentState();
             if (state == PomodoroState.WORK) {
                 continuousWorkSeconds++;
-                // Kiểm tra nếu đang làm mà chạm mốc 1 tiếng
                 if (continuousWorkSeconds == WATER_REMINDER_THRESHOLD) {
                     statusLabel.setText("⚠️ Bạn đã làm 1 giờ rồi! Hãy uống nước.");
                 }

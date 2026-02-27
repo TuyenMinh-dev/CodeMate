@@ -6,6 +6,7 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.SVGPath;
 import roots.entity.ToDoList;
 import roots.services.ToDoService;
+
 import java.util.function.Supplier;
 
 public class ToDoCell extends ListCell<ToDoList> {
@@ -58,8 +59,10 @@ public class ToDoCell extends ListCell<ToDoList> {
             }
         });
         btnEdit.setOnAction(e -> {
-            lblTitle.setManaged(false); lblTitle.setVisible(false);
-            txtEdit.setManaged(true); txtEdit.setVisible(true);
+            lblTitle.setManaged(false);
+            lblTitle.setVisible(false);
+            txtEdit.setManaged(true);
+            txtEdit.setVisible(true);
             txtEdit.setText(getItem().getTitle());
             txtEdit.requestFocus();
         });
@@ -67,16 +70,20 @@ public class ToDoCell extends ListCell<ToDoList> {
             getItem().setTitle(txtEdit.getText());
             todoService.update(getItem());
             lblTitle.setText(txtEdit.getText());
-            txtEdit.setManaged(false); txtEdit.setVisible(false);
-            lblTitle.setManaged(true); lblTitle.setVisible(true);
+            txtEdit.setManaged(false);
+            txtEdit.setVisible(false);
+            lblTitle.setManaged(true);
+            lblTitle.setVisible(true);
         });
     }
 
     @Override
     protected void updateItem(ToDoList item, boolean empty) {
         super.updateItem(item, empty);
-        if (empty || item == null) { setGraphic(null); setStyle("-fx-background-color: transparent;"); }
-        else {
+        if (empty || item == null) {
+            setGraphic(null);
+            setStyle("-fx-background-color: transparent;");
+        } else {
             lblTitle.setText(item.getTitle());
             checkBox.setSelected(item.isCompleted());
             if (item.isCompleted()) {
@@ -90,8 +97,13 @@ public class ToDoCell extends ListCell<ToDoList> {
     }
 
     private Button createIconButton(String svg) {
-        SVGPath path = new SVGPath(); path.setContent(svg); path.setStyle("-fx-fill: #94a3b8;");
-        Button b = new Button(); b.setGraphic(path);
+        SVGPath path = new SVGPath();
+        path.setContent(svg);
+        path.setStyle("-fx-fill: #94a3b8;");
+        path.setScaleX(1.2);
+        path.setScaleY(1.2);
+        Button b = new Button();
+        b.setGraphic(path);
         b.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
         return b;
     }
