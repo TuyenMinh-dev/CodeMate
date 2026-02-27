@@ -38,5 +38,6 @@ public class User {
         this.email = email;
         this.otp = otp;
     }
+
 }
 
