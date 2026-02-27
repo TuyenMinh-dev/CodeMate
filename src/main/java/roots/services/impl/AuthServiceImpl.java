@@ -8,6 +8,7 @@ import roots.dao.RegisterDAO;
 import roots.models.User;
 import roots.services.AuthService;
 import roots.utils.AlertUtils;
+import roots.utils.HashedPasswordUtils;
 
 
 public class AuthServiceImpl implements AuthService {
@@ -17,14 +18,23 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public User login(String username, String password) {
-        User user = loginDAO.checkAccountUser(username,password);
-        return user;
+        User user = loginDAO.getUserByUsername(username);
+
+        if(user != null && HashedPasswordUtils.checkHashedPassword(password, user.getPassword())){
+            return user;
+        }
+        return null;
     }
 
     @Override
     public User forgetPassword(String email, String newPassword) {
         User checkUser = loginDAO.getUserByEmail(email);
-        checkUser.setPassword(newPassword);
+        if(checkUser != null){
+            String hashNewPass = HashedPasswordUtils.hashedPassword(newPassword);
+            checkUser.setPassword(hashNewPass);
+            loginDAO.updateUser(checkUser);
+        }
+
         return checkUser;
     }
 
@@ -43,13 +53,21 @@ public class AuthServiceImpl implements AuthService {
             AlertUtils.showFailAlert(Error.fail, Error.checkPassword);
             return false;
         }
+        User checkEmail = loginDAO.getUserByEmail(email);
+        if(checkEmail != null){
+            System.out.println(Error.checkEmail);
+            AlertUtils.showFailAlert(Error.fail, Error.checkEmail);
+            return false;
+        }
 
         User newUser = new User();
         newUser.setFullname(fullname);
         newUser.setUsername(username);
         newUser.setPassword(password);
         newUser.setEmail(email);
-        newUser.setPassword(password);
+
+        String hashPass = HashedPasswordUtils.hashedPassword(password);
+        newUser.setPassword(hashPass);
 
         return registerDAO.registerNewUser(newUser);
     }

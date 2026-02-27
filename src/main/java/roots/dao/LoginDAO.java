@@ -1,6 +1,7 @@
 package roots.dao;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 import org.hibernate.Session;
 import roots.constrant.Error;
@@ -8,20 +9,23 @@ import roots.models.User;
 import roots.utils.DBConnection;
 
 public class LoginDAO {
-    public User checkAccountUser(String username, String password){
+    public boolean updateUser(User user){
         EntityManager em = DBConnection.getEntityManager();
+        EntityTransaction entityTransaction = em.getTransaction();
         try{
-            User user = em.createQuery("select u from User u where u.username = :user and u.password = :pass", User.class)
-                    .setParameter("user", username)
-                    .setParameter("pass", password)
-                    .getSingleResult();
-            return user ;
-        } catch (NoResultException e) {
+            entityTransaction.begin();
+            em.merge(user);
+            entityTransaction.commit();
+            return true;
+        } catch (Exception e) {
+            if(entityTransaction.isActive()){
+                entityTransaction.rollback();
+            }
             System.out.println(Error.failLogin);
             e.printStackTrace();
-            return null;
+            return false;
         }finally {
-            if(em.isOpen() && em != null){
+            if(em != null && em.isOpen()){
                 em.close();
             }
         }
@@ -36,7 +40,7 @@ public class LoginDAO {
             System.out.println(errorMessage);
             return  null;
         }finally {
-            if(em.isOpen() && em != null){
+            if(em != null && em.isOpen()){
                 em.close();
             }
         }
