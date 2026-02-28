@@ -7,7 +7,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 public class ToDoListDAO {
     private static EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("CodeMatePU");
+            Persistence.createEntityManagerFactory("codemate");
 
     public static void save(ToDoList todo) {
         EntityManager em = emf.createEntityManager();

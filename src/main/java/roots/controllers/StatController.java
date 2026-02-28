@@ -120,13 +120,6 @@ public class StatController {
     }
 
     @FXML
-    private void handleClose() {
-        if (barChart.getScene() != null) {
-            Stage stage = (Stage) barChart.getScene().getWindow();
-            stage.close();
-        }
-    }
-    @FXML
     public void handlePomoTabClick(MouseEvent event) {
         updateTabUI(true);
     }
