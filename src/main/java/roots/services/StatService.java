@@ -8,6 +8,7 @@ import javafx.scene.chart.XYChart;
 import roots.entity.DailyStats;
 import roots.entity.PomodoroState;
 import roots.entity.TimeManagements;
+import roots.models.User;
 import roots.models.UserSession;
 import roots.utils.DBConnection;
 import java.io.*;
@@ -73,11 +74,12 @@ public class StatService {
 
     // 4. Viết hàm loadWaterData
     private void loadWaterData() {
+        User currentUser = UserSession.getCurrentUser();
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Lượng nước (ml)");
 
         // Lấy map dữ liệu từ service
-        Map<String, Integer> data = waterService.getWeeklyWaterData();
+        Map<String, Integer> data = waterService.getWeeklyWaterData(currentUser);
 
         // Đổ dữ liệu vào series
         data.forEach((date, amount) -> {

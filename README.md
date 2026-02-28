@@ -54,7 +54,7 @@ Dự án được phát triển dựa trên mô hình MVC với các công ngh�
 
 ---
 ## Sơ đồ EER Diagram
-![img_4.png](img_4.png)
+![img_5.png](img_5.png)
 ---
 
 ## 🚀 Cài đặt (Install)

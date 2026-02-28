@@ -1,6 +1,8 @@
 package roots.services;
 
 import jakarta.persistence.EntityManager;
+import roots.models.User;
+import roots.models.UserSession;
 import roots.utils.DBConnection;
 import roots.entity.WaterLog;
 import java.util.Map;
@@ -10,14 +12,16 @@ import java.time.format.DateTimeFormatter;
 
 
 public class WaterService {
-    public void addWater(int amount) {
+
+    public void addWater(int amount, User user) {
         EntityManager em = DBConnection.getEntityManager();
         try {
             em.getTransaction().begin();
             LocalDate today = LocalDate.now();
 
-            WaterLog log = em.createQuery("SELECT w FROM WaterLog w WHERE w.date = :d", WaterLog.class)
+            WaterLog log = em.createQuery("SELECT w FROM WaterLog w WHERE w.date = :d AND w.user = :u", WaterLog.class)
                     .setParameter("d", today)
+                    .setParameter("u", user)
                     .getResultStream()
                     .findFirst()
                     .orElse(null);
@@ -26,6 +30,7 @@ public class WaterService {
                 log = new WaterLog();
                 log.setDate(today);
                 log.setTotalAmount(amount);
+                log.setUser(user);
                 em.persist(log);
             } else {
                 log.setTotalAmount(log.getTotalAmount() + amount);
@@ -37,25 +42,27 @@ public class WaterService {
         }
     }
 
-    public int getTodayTotal() {
+    public int getTodayTotal(User user) {
         EntityManager em = DBConnection.getEntityManager();
         try {
-            Long total = em.createQuery("SELECT SUM(w.totalAmount) FROM WaterLog w WHERE w.date = :today", Long.class)
+            Long total = em.createQuery("SELECT SUM(w.totalAmount) FROM WaterLog w WHERE w.date = :today AND w.user = :u", Long.class)
                     .setParameter("today", LocalDate.now())
+                    .setParameter("u", user)
                     .getSingleResult();
             return total != null ? total.intValue() : 0;
         } finally {
             em.close();
         }
     }
-    public Map<String, Integer> getWeeklyWaterData() {
+    public Map<String, Integer> getWeeklyWaterData(User user) {
         EntityManager em = DBConnection.getEntityManager();
         Map<String, Integer> data = new LinkedHashMap<>();
         try {
             for (int i = 6; i >= 0; i--) {
                 LocalDate date = LocalDate.now().minusDays(i);
-                Long total = em.createQuery("SELECT SUM(w.totalAmount) FROM WaterLog w WHERE w.date = :d", Long.class)
+                Long total = em.createQuery("SELECT SUM(w.totalAmount) FROM WaterLog w WHERE w.date = :d AND w.user = :u", Long.class)
                         .setParameter("d", date)
+                        .setParameter("u", user)
                         .getSingleResult();
 
                 String label = date.format(DateTimeFormatter.ofPattern("dd/MM"));

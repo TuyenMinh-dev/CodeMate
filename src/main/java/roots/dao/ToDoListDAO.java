@@ -5,6 +5,8 @@ import roots.entity.ToDoList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import roots.models.User;
+
 public class ToDoListDAO {
     private static EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("codemate");
@@ -57,46 +59,30 @@ public class ToDoListDAO {
     }
 
 
-    public static List<ToDoList> findAll() {
-        EntityManager em = emf.createEntityManager();
-        List<ToDoList> list = em
-                .createQuery("FROM ToDoList", ToDoList.class)
-                .getResultList();
-        em.close();
-        return list;
-    }
-    public static List<ToDoList> findByDate(LocalDate date) {
+
+    public static List<ToDoList> findByUserAndDate(User user, LocalDate date) {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.createQuery("FROM ToDoList WHERE createdAt = :date", ToDoList.class)
+            return em.createQuery("FROM ToDoList t WHERE t.createdAt = :date AND t.user = :user", ToDoList.class)
                     .setParameter("date", date)
+                    .setParameter("user", user)
                     .getResultList();
         } finally {
             em.close();
         }
     }
 
-    public static double getCompletionRate(LocalDate date) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            List<ToDoList> tasks = em.createQuery("FROM ToDoList WHERE createdAt = :date", ToDoList.class)
-                    .setParameter("date", date)
-                    .getResultList();
-            if (tasks.isEmpty()) return 0.0;
-            return (double) tasks.stream().filter(ToDoList::isCompleted).count() / tasks.size();
-        } finally {
-            em.close();
-        }
-    }
-    public static void carryOverPendingTasks(LocalDate today) {
+
+    public static void carryOverPendingTasks(User user,LocalDate today) {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
 
             // Tìm những task chưa xong của những ngày trước
             List<ToDoList> pendingTasks = em.createQuery(
-                            "FROM ToDoList WHERE completed = false AND createdAt < :today", ToDoList.class)
+                            "FROM ToDoList WHERE completed = false AND createdAt < :today AND user = :user", ToDoList.class)
                     .setParameter("today", today)
+                    .setParameter("user", user)
                     .getResultList();
 
             // Đổi ngày của chúng thành hôm nay

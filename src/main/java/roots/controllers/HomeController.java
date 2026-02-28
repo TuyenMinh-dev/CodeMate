@@ -10,6 +10,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import roots.models.User;
+import roots.models.UserSession;
 import roots.services.WaterService;
 import roots.utils.ChangeFXML;
 
@@ -39,10 +41,12 @@ public class HomeController {
     private WaterService waterService = new WaterService();
     @FXML
     private Label lblWaterTotal;
+
+    private User currentUser = UserSession.getCurrentUser();
     @FXML
     private void handleDrinkWater() {
         try {
-            waterService.addWater(250);
+            waterService.addWater(250, currentUser);
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Thông báo");
@@ -55,7 +59,7 @@ public class HomeController {
     }
 
     private void updateWaterUI() {
-        int total = waterService.getTodayTotal();
+        int total = waterService.getTodayTotal(currentUser);
         Platform.runLater(() -> {
             if(lblWaterTotal != null) lblWaterTotal.setText("Đã uống: " + total + "ml");
         });
@@ -73,7 +77,7 @@ public class HomeController {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == btnDone) {
-                waterService.addWater(250);
+                waterService.addWater(250, currentUser);
                 updateWaterUI();
             }
         });

@@ -5,6 +5,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import roots.dao.ToDoListDAO;
 import roots.entity.ToDoList;
+import roots.models.User;
+import roots.models.UserSession;
 import roots.services.ToDoService;
 import roots.utils.ChangeFXML;
 import roots.view.ToDoCell;
@@ -41,6 +43,8 @@ public class ToDoController implements Initializable {
     @FXML
     private VBox mainTodoBox;
 
+    private User currentUser = UserSession.getCurrentUser();
+
     @FXML
     public void comeBackTodolist(MouseEvent event){
         ChangeFXML.changeFXML(event, "/view/home.fxml");
@@ -50,16 +54,16 @@ public class ToDoController implements Initializable {
     private void handleAdd() {
         String title = txtTitle.getText();
         if (title == null || title.isEmpty()) return;
-        ToDoList todo = todoService.addTodo(title);
-        if (todo == null) {
-            todo = new ToDoList();
-            todo.setTitle(title);
-            todo.setCompleted(false);
-        }
 
-        allTodos.add(todo);
-        txtTitle.clear();
-        updateProgress();
+        ToDoList todo = todoService.addTodo(title, currentUser);
+        if (todo != null) {
+            allTodos.add(todo);
+            txtTitle.clear();
+            updateProgress();
+        }else {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Không thể thêm công việc!");
+            alert.show();
+        }
     }
 
     @FXML
@@ -85,14 +89,14 @@ public class ToDoController implements Initializable {
 
         listTodo.setCellFactory(list -> new ToDoCell(todoService, () -> currentFilter, this::updateProgress));
         allTodos.clear();
-        allTodos.addAll(ToDoListDAO.findByDate(LocalDate.now()));
+        allTodos.addAll(ToDoListDAO.findByUserAndDate(currentUser, LocalDate.now()));
         listTodo.setItems(allTodos);
     }
 
     @FXML
     private void handleStartDay() {
         // 1. Quét toàn bộ task chưa xong từ quá khứ và đẩy về hôm nay
-        ToDoListDAO.carryOverPendingTasks(LocalDate.now());
+        ToDoListDAO.carryOverPendingTasks( currentUser,LocalDate.now());
 
         // 2. Chuyển đổi giao diện (Như cũ)
         startDayBox.setVisible(false);
@@ -102,7 +106,7 @@ public class ToDoController implements Initializable {
 
         // 3. Load dữ liệu (Lúc này allTodos sẽ bao gồm cả việc mới của hôm nay + việc cũ vừa được đẩy sang)
         allTodos.clear();
-        allTodos.addAll(ToDoListDAO.findByDate(LocalDate.now()));
+        allTodos.addAll(ToDoListDAO.findByUserAndDate(currentUser,LocalDate.now()));
 
         // 4. Cập nhật giao diện (Như cũ)
         listTodo.setItems(allTodos);

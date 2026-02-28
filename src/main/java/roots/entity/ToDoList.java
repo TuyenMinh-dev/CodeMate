@@ -1,6 +1,8 @@
 package roots.entity;
 
 import jakarta.persistence.*;
+import roots.models.User;
+
 import java.time.LocalDate;
 @Entity
 @Table(name = "todo_list")
@@ -20,13 +22,18 @@ public class ToDoList {
     @Column(name = "created_at")
     private LocalDate createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     // Constructor rỗng – BẮT BUỘC cho Hibernate
     public ToDoList() {
         this.createdAt = LocalDate.now();
     }
 
-    public ToDoList(String title) {
+    public ToDoList(String title, User user) {
         this.title = title;
+        this.user = user;
         this.completed = false;
         this.createdAt = LocalDate.now(); // Gán ngày hiện tại khi tạo mới
     }

@@ -8,6 +8,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.AudioClip;
 import roots.entity.PomodoroState;
+import roots.models.User;
+import roots.models.UserSession;
 import roots.services.PomodoroTimer;
 import roots.services.StatService;
 import roots.services.WaterService;
@@ -31,6 +33,8 @@ public class PomodoroController {
     private int workMinutes = 30;
     private int continuousWorkSeconds = 0;
     private final int WATER_REMINDER_THRESHOLD = 3600;
+
+    private User currentUser = UserSession.getCurrentUser();
 
     public PomodoroController() {}
 
@@ -192,7 +196,7 @@ public class PomodoroController {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == btnYes) {
-                waterService.addWater(250);
+                waterService.addWater(250, currentUser);
                 System.out.println("Xác nhận đã uống 250ml nước");
             }
         });

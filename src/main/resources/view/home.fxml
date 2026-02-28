@@ -107,7 +107,10 @@
                   <Font size="14.0" />
                </font>
             </Label>
-         </children></AnchorPane>
+         </children>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></AnchorPane>
       <AnchorPane layoutX="474.0" layoutY="142.0" onMouseClicked="#showTodoList" prefHeight="194.0" prefWidth="208.0" style="-fx-background-color: rgba(10,-50,10,0.56); -fx-background-radius: 20;">
          <children>
             <Text fill="WHITE" layoutX="10.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hoạt động trong ngày" wrappingWidth="192.0">

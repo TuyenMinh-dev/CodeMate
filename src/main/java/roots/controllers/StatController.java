@@ -6,6 +6,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import roots.models.User;
+import roots.models.UserSession;
 import roots.services.StatService;
 import roots.services.WaterService;
 import roots.utils.ChangeFXML;
@@ -26,7 +28,7 @@ public class StatController {
     @FXML private Button btnWaterTab;
 
 
-
+    private User currentUser = UserSession.getCurrentUser();
     @FXML
     public void initialize() {
         // Sử dụng Platform.runLater để đảm bảo UI đã load xong mới chỉnh style
@@ -87,7 +89,7 @@ public class StatController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Lượng nước");
 
-        Map<String, Integer> data = waterService.getWeeklyWaterData();
+        Map<String, Integer> data = waterService.getWeeklyWaterData(currentUser);
         data.forEach((date, amount) -> {
             series.getData().add(new XYChart.Data<>(date, amount));
         });

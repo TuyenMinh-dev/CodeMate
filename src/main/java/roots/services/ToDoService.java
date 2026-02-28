@@ -2,21 +2,26 @@ package roots.services;
 
 import roots.dao.ToDoListDAO;
 import roots.entity.ToDoList;
+import roots.models.User;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class ToDoService {
 
-    public static ToDoList addTodo(String title) {
-        if (title == null || title.trim().isEmpty()) return null;
+    public ToDoList addTodo(String title, User currentUser) {
+        if (title == null || title.trim().isEmpty() || currentUser == null) return null;
 
-        ToDoList todo = new ToDoList(title.trim());
+        ToDoList todo = new ToDoList(title.trim(), currentUser);
         ToDoListDAO.save(todo);
         return todo;
     }
 
-    public List<ToDoList> getAllTodos() {
-        return ToDoListDAO.findAll();
+    public List<ToDoList> getToDosByUser(User currentUser) {
+        if(currentUser == null){
+            return null;
+        }
+        return ToDoListDAO.findByUserAndDate(currentUser, LocalDate.now());
     }
 
     public void update(ToDoList todo) {

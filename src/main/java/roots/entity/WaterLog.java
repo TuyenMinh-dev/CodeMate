@@ -1,6 +1,7 @@
 package roots.entity;
 
 import jakarta.persistence.*;
+import roots.models.User;
 
 import java.time.LocalDate;
 
@@ -13,12 +14,17 @@ public class WaterLog {
     private LocalDate date;
     private int totalAmount;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     public WaterLog() {
     }
 
-    public WaterLog(LocalDate date, int totalAmount) {
+    public WaterLog(LocalDate date, int totalAmount, User user) {
         this.date = date;
         this.totalAmount = totalAmount;
+        this.user = user;
     }
 
     public void setDate(LocalDate date) {
@@ -43,5 +49,9 @@ public class WaterLog {
 
     public LocalDate getDate() {
         return date;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
